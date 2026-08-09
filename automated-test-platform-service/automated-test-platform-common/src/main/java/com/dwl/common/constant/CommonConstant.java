@@ -67,7 +67,7 @@ public final class CommonConstant {
     public static final int LOGICAL_DELETE_DELETED = 1;
 
     /**
-     * 未删除（正常）
+     * 未删除(正常)
      * Not deleted (normal)
      */
     public static final int LOGICAL_DELETE_NORMAL = 0;

@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- ============================================================
+    <!-- 
      双模式驱动的Web自动化测试平台 · Java 后端父POM
      包名: com.dwl
      JDK: 17
      Spring Boot: 3.4.1
-     ============================================================ -->
+    -->
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -28,6 +28,7 @@
 
     <modules>
         <module>automated-test-platform-common</module>
+        <module>automated-test-platform-model</module>
     </modules>
 
 
@@ -57,21 +58,27 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- 内部模块 -->
+            <!--
+            内部模块
+            -->
             <dependency>
                 <groupId>com.dwl</groupId>
                 <artifactId>automated-test-platform-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
-            <!-- MyBatis-Plus -->
+            <!--
+            MyBatis-Plus
+            -->
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
                 <version>${mybatis-plus-spring-boot3-starter.version}</version>
             </dependency>
 
-            <!-- SpringDoc OpenAPI -->
+            <!--
+            SpringDoc OpenAPI
+            -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -83,7 +90,9 @@
                 <version>${springdoc-openapi.version}</version>
             </dependency>
 
-            <!-- JWT -->
+            <!--
+            JWT
+            -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
@@ -99,9 +108,9 @@
                 <artifactId>jjwt-jackson</artifactId>
                 <version>${jjwt.version}</version>
             </dependency>
-
-
+            
         </dependencies>
+
     </dependencyManagement>
 
 

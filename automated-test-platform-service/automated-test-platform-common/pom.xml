@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- ============================================================
+    <!-- 
      automated-test-platform-common 通用模块
      包含：统一响应体、异常定义、常量、基础实体、工具类、枚举
      Contains: unified response, exception definitions,
                constants, base entity, utilities, enums
-     ============================================================ -->
+    -->
 
     <parent>
         <groupId>com.dwl</groupId>
@@ -33,20 +33,28 @@
 
     <dependencies>
 
-        <!-- lombok -->
+        <!--
+        lombok
+        -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- SpringDoc OpenAPI / Swagger文档 -->
+        <!--
+        SpringDoc OpenAPI
+        Swagger 文档
+        -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
         </dependency>
 
-        <!-- ==================== JWT / JSON Web Token ==================== -->
+        <!--
+        JWT
+        JSON Web Token
+        -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -62,16 +70,31 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- ==================== Jakarta Validation / 参数校验 ==================== -->
+        <!--
+        Jakarta Validation
+        参数校验
+         -->
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
-        <!-- ==================== MyBatis-Plus / ORM增强 ==================== -->
+        <!--
+        MyBatis-Plus
+        ORM 增强
+        -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+
+        <!--
+        Spring Security
+        安全框架
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
 
