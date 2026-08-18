@@ -6,6 +6,8 @@ import com.dwl.common.base.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 /**
  * 系统用户实体
  * System User Entity
@@ -28,4 +30,45 @@ import lombok.*;
         """)
 public class SysUser extends BaseEntity {
 
+    @Schema(description = """
+            用户名
+            UserName
+            """, example = "admin")
+    private String username;
+
+    @Schema(description = """
+            密码(加密存储)
+            PassWord(encrypted)
+            """)
+    private String password;
+
+    @Schema(description = """
+            真实姓名
+            Real Name
+            """, example = "ADMIN")
+    private String realName;
+
+    @Schema(description = """
+            邮箱
+            Email address
+            """, example = "admin@qq.com")
+    private String email;
+
+    @Schema(description = """
+            头像 URL
+            Avatar URL
+            """)
+    private String avatar;
+
+    @Schema(description = """
+            状态: 1-启用 0-禁用
+            Status: 1-enabled, 0-disabled
+            """, example = "1")
+    private Integer status;
+
+    @Schema(description = """
+            最后登录时间
+            Last login timestamp
+            """)
+    private LocalDateTime lastLoginTime;
 }
