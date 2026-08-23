@@ -109,3 +109,4 @@ Thumbs.db
 # ==================== TRAE 配置 / TRAE Config ====================
 .trae/
 /exercise/
+/.claude/

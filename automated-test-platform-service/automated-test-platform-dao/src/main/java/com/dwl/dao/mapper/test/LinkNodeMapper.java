@@ -1,0 +1,18 @@
+package com.dwl.dao.mapper.test;
+
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.dwl.model.entity.test.LinkNode;
+import org.apache.ibatis.annotations.Mapper;
+
+/**
+ * 链路节点
+ * Link Node Mapper 接口
+ *
+ * @Author Dwl
+ * @Version 1.0
+ * @Since 2026-08-23 17:33
+ */
+@Mapper
+public interface LinkNodeMapper extends BaseMapper<LinkNode> {
+}

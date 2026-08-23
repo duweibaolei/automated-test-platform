@@ -29,6 +29,7 @@
     <modules>
         <module>automated-test-platform-common</module>
         <module>automated-test-platform-model</module>
+        <module>automated-test-platform-dao</module>
     </modules>
 
 
@@ -64,6 +65,11 @@
             <dependency>
                 <groupId>com.dwl</groupId>
                 <artifactId>automated-test-platform-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dwl</groupId>
+                <artifactId>automated-test-platform-model</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
