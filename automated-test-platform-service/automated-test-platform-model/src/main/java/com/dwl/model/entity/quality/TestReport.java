@@ -1,4 +1,4 @@
-package com.dwl.model.entity.test;
+package com.dwl.model.entity.quality;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.dwl.common.base.BaseEntity;
