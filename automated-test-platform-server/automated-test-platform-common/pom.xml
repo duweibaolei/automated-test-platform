@@ -6,7 +6,7 @@
 
     <!-- 
      automated-test-platform-common 通用模块
-     包含：统一响应体、异常定义、常量、基础实体、工具类、枚举
+     包含: 统一响应体 异常定义 常量 基础实体 工具类 枚举
      Contains: unified response, exception definitions,
                constants, base entity, utilities, enums
     -->
@@ -34,7 +34,7 @@
     <dependencies>
 
         <!--
-        lombok
+            lombok
         -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -43,8 +43,8 @@
         </dependency>
 
         <!--
-        SpringDoc OpenAPI
-        Swagger 文档
+            SpringDoc OpenAPI
+            Swagger 文档
         -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -52,8 +52,8 @@
         </dependency>
 
         <!--
-        JWT
-        JSON Web Token
+            JWT
+            JSON Web Token
         -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -71,8 +71,8 @@
         </dependency>
 
         <!--
-        Jakarta Validation
-        参数校验
+            Jakarta Validation
+            参数校验
          -->
         <dependency>
             <groupId>jakarta.validation</groupId>
@@ -80,8 +80,8 @@
         </dependency>
 
         <!--
-        MyBatis-Plus
-        ORM 增强
+            MyBatis-Plus
+            ORM 增强
         -->
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -89,8 +89,8 @@
         </dependency>
 
         <!--
-        Spring Security
-        安全框架
+            Spring Security
+            安全框架
         -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

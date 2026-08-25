@@ -6,7 +6,7 @@
 
     <!-- 
        automated-test-platform-model 数据模型模块
-       包含: 实体类(Entity) / 数据传输对象(DTO) / 视图对象(VO)
+       包含: 实体类(Entity) 数据传输对象(DTO) 视图对象(VO)
        Contains: Entity classes, Data Transfer Objects, View Objects
     -->
 
@@ -32,8 +32,8 @@
     <dependencies>
 
         <!--
-        内部模块
-        Internal Modules
+            内部模块
+            Internal Modules
         -->
         <dependency>
             <groupId>com.dwl</groupId>
@@ -41,7 +41,7 @@
         </dependency>
 
         <!--
-        Lombok
+            Lombok
         -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -49,16 +49,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--
-        MyBatis-Plus
-        ORM增强(仅注解依赖)
-        -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-annotation</artifactId>
-            <version>3.5.9</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
 </project>

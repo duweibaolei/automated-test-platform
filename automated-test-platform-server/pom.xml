@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- 
-     双模式驱动的Web自动化测试平台 · Java 后端父POM
-     包名: com.dwl
-     JDK: 17
-     Spring Boot: 3.4.1
+         双模式驱动的Web自动化测试平台 · Java 后端父POM
+         包名: com.dwl
+         JDK: 17
+         Spring Boot: 3.4.1
     -->
 
     <parent>
@@ -61,7 +61,7 @@
     <dependencyManagement>
         <dependencies>
             <!--
-            内部模块
+                内部模块
             -->
             <dependency>
                 <groupId>com.dwl</groupId>
@@ -85,7 +85,7 @@
             </dependency>
 
             <!--
-            MyBatis-Plus
+                MyBatis-Plus
             -->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -94,7 +94,7 @@
             </dependency>
 
             <!--
-            SpringDoc OpenAPI
+                SpringDoc OpenAPI
             -->
             <dependency>
                 <groupId>org.springdoc</groupId>
@@ -108,7 +108,7 @@
             </dependency>
 
             <!--
-            JWT
+                JWT
             -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>

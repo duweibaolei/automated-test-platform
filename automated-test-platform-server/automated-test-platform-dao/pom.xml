@@ -3,6 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+
+    <!--
+         automated-test-platform-dao 数据访问模块
+         包含: Mapper接口 XML映射文件
+         Contains: Mapper interfaces, XML mapping files
+    -->
+
     <parent>
         <groupId>com.dwl</groupId>
         <artifactId>automated-test-platform-server</artifactId>
@@ -15,15 +23,18 @@
     <description>数据访问模块 - Mapper接口、XML映射文件</description>
 
     <properties>
+        <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
+
 
     <dependencies>
         <!--
-        内部模块
-        Internal Modules
+            内部模块
+            Internal Modules
         -->
         <dependency>
             <groupId>com.dwl</groupId>
@@ -31,8 +42,8 @@
         </dependency>
 
         <!--
-        MyBatis-Plus
-        ORM增强
+            MyBatis-Plus
+            ORM增强
         -->
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -40,7 +51,7 @@
         </dependency>
 
         <!--
-        Lombok
+            Lombok
         -->
         <dependency>
             <groupId>org.projectlombok</groupId>
