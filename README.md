@@ -37,6 +37,8 @@
 - **Python**：毕竟叫自动化测试平台，怎么能少了 AI 的参与呢，负责智能编排、用例生成、根因分析、语义匹配这些能力。
 - **Vue**：专职页面展示即可。
 
+---
+
 ## 数据库设计
 
 嗯，当下确定了基础架构，理论上了可以开始写代码了，但是吧直接写代码还是会陷入到之前的困境当中，
@@ -145,6 +147,7 @@
 - **结果反馈**：执行结束 -> 生成 `test_report` -> AI 进行 `ai_root_cause` 分析 -> 若失败则创建 `defect_record`。
 - **持续学习**：分析结果与人工标记反馈至 `agent_memory`，优化后续分析准确性。
 
+---
 
 ## JAVA 后端相关业务构思与设计
 
@@ -165,4 +168,82 @@
   - 因此CQRS做的事情很简单：**写链路走领域模型，保证业务正确性；读链路走独立的查询模型，专注优化查询性能。**
 
 **一个项目是无法控制业务递增，但是好的架构可以控制业务熵的递增。**
+
+### 整体架构：9 模块分层
+
+```
+automated-test-platform-server (父POM, packaging=pom)
+ │
+ ├── automated-test-platform-common      基础层：R/ErrorCode/BaseController/BaseEntity/JwtUtil/枚举/全局异常/DDD基类
+ │     └ 被几乎所有模块依赖
+ │
+ ├── automated-test-platform-model        领域层：聚合根/实体/值对象/领域事件/仓储接口（按6个限界上下文分包）
+ │     └ 依赖 common
+ │
+ ├── automated-test-platform-dao         基础设施层：Mapper接口/仓储实现/防腐层/消息队列（按6个限界上下文分包）
+ │     └ 依赖 model
+ │
+ ├── automated-test-platform-service      应用层：Command/Query/Handler/应用服务/DTO/VO（按6个限界上下文分包）
+ │     └ 依赖 dao + common（引入 Spring Security、JWT）
+ │
+ ├── automated-test-platform-web          Web 层：Controller、WebSocket、SecurityConfig、OpenApiConfig（按6个限界上下文分包）
+ │     └ 依赖 service
+ │
+ ├── automated-test-platform-grpc-client   gRPC 客户端：与 C 引擎通信
+ │     └ 依赖 common（含 .proto 编译插件）
+ │
+ ├── automated-test-platform-ai-client     AI 服务客户端：HTTP 调用 Python AI 服务
+ │     └ 依赖 common + model
+ │
+ ├── automated-test-platform-mq            消息队列模块：RabbitMQ 生产者/消费者
+ │     └ 依赖 common + model
+ │
+ └── automated-test-platform-admin         启动聚合模块（唯一可执行 jar）
+       └ 引入 web + grpc-client + ai-client + mq
+         + MySQL 驱动 + Flyway + Redis + RabbitMQ + Actuator
+```
+**依赖链**：
+
+- `common → model → dao → service → web` 是主干链路
+- `grpc-client`、`ai-client`、`mq` 是独立旁支，直接依赖 common/model
+- `admin` 聚合所有模块形成可运行 Spring Boot 应用
+
+---
+
+### DDD 限界上下文 + 域内 CQRS 架构
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        自动化测试平台                                  │
+│                                                                     │
+│  ┌──────────┐  领域事件    ┌──────────┐  领域事件   ┌──────────┐       │
+│  │ 代码分析域 │ ─────────→ │ 测试管理域 │ ─────────→ │ 执行管控域 │       │
+│  │CodeAnalysis│          │TestMgmt  │            │Execution │       │ 
+│  └────┬─────┘            └────┬─────┘            └────┬─────┘       │
+│       │ ACL                     │ ACL                     │ ACL     │
+│       ▼                         ▼                         ▼         │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │                    系统管理域 (System)                        │    │
+│  │         用户/角色/权限/环境/仓库/字典 (上游基础域)                 │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+│                                                                     │
+│  ┌──────────┐  领域事件    ┌──────────┐                              │
+│  │ 质量报表域 │ ─────────→ │ 智能体域   │                              │
+│  │ Quality  │            │  Agent   │                              │
+│  └──────────┘            └──────────┘                              │
+└─────────────────────────────────────────────────────────────────────┘
+```
+#### 交互关系
+
+| 上游 | 下游 | 交互内容 | 模式 |
+|------|------|---------|------|
+| 系统管理域 | 代码分析域 | `repo_id` 仓库配置 | ID引用 + ACL |
+| 系统管理域 | 测试管理域 | `env_id`, `created_by` | ID引用 + ACL |
+| 系统管理域 | 执行管控域 | `env_id`, `trigger_user_id` | ID引用 + ACL |
+| 系统管理域 | 质量报表域 | `created_by`, `resolved_by` | ID引用 + ACL |
+| 代码分析域 | 测试管理域 | 变更分析影响用例 | 领域事件 |
+| 测试管理域 | 执行管控域 | `case_id` 用例被执行 | ID引用 + ACL |
+| 执行管控域 | 质量报表域 | `task_id`, `execution_id` | 领域事件 + ID引用 |
+| 质量报表域 | 智能体域 | 报告/缺陷数据供 AI 记忆 | 领域事件 |
+| 代码分析域 | 质量报表域 | `commit_id` 关联缺陷 | ID引用 + ACL |
 
