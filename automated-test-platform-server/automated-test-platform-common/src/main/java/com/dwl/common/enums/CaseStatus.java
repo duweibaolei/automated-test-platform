@@ -19,6 +19,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Schema(description = """
+        用例状态枚举
         Case Status Enumeration
         """)
 public enum CaseStatus {

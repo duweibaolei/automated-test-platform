@@ -57,7 +57,7 @@ public final class SecurityUtil {
      * 从 Spring Security 上下文中提取已认证用户的 ID 字符串
      * Extracts the authenticated user's ID as a string from the Spring Security context
      *
-     * @return 当前登录用户 ID 字符串，未认证时返回 null
+     * @return 当前登录用户 ID 字符串,未认证时返回 null
      * Current login user ID string, or null if not authenticated
      */
     public static String getCurrentUserIdAsString() {

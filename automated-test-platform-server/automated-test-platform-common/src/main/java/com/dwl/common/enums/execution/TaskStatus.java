@@ -1,4 +1,4 @@
-package com.dwl.common.enums;
+package com.dwl.common.enums.execution;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -6,46 +6,44 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Execution Status Enumeration
+ * 任务状态编码
+ * Task Status Enumeration
  * <p>
- * 定义测试用例执行结果的详细状态
- * Defines the detailed status of test case execution results
+ * 定义测试任务的生命周期状态
+ * Defines the lifecycle states of a test task
  *
  * @Author Dwl
  * @Version 1.0
- * @Since 2026-08-06 01:28
+ * @Since 2026-08-10 01:22
  */
 @Getter
 @AllArgsConstructor
 @Schema(description = """
-        执行状态枚举
-        Execution Status Enumeration
+        任务状态枚举
+        Task Status Enumeration
         """)
-public enum ExecutionStatus {
+public enum TaskStatus {
 
     PENDING("pending", "待执行"),
     RUNNING("running", "执行中"),
+    PAUSED("paused", "已暂停"),
+    COMPLETED("completed", "已完成"),
+    FAILED("failed", "执行失败"),
+    CANCELLED("cancelled", "已取消"),
     PASSED("passed", "通过"),
-    FAILED("failed", "失败"),
     SKIPPED("skipped", "跳过"),
     ERROR("error", "错误");
 
-    /**
-     * 状态编码
-     * Status code
-     */
+
     @Schema(description = """
+            状态编码
             Status code
-            """, example = "passed")
+            """, example = "pending")
     private final String code;
 
-    /**
-     * 状态描述
-     * Status description
-     */
     @Schema(description = """
+            状态描述
             Status description
-            """, example = "通过")
+            """, example = "待执行")
     private final String description;
-
 }
