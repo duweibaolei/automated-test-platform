@@ -9,9 +9,9 @@ import java.io.Serializable;
  * DDD 值对象标记接口
  * DDD Value Object Marker Interface
  * <p>
- * 值对象没有唯一标识,通过属性值区分。值对象是不可变的(Immutable),
- * 创建后不能修改,需要修改时创建新的值对象替换。
- * 典型值对象: 地址(Address)、金额(Money)、坐标(Coordinate)。
+ * 值对象没有唯一标识,通过属性值区分值对象是不可变的(Immutable),
+ * 创建后不能修改,需要修改时创建新的值对象替换
+ * 典型值对象: 地址(Address)、金额(Money)、坐标(Coordinate)
  * <p>
  * Value Objects have no unique identity and are distinguished by attribute values.
  * Value Objects are immutable; once created, they cannot be modified. When modification

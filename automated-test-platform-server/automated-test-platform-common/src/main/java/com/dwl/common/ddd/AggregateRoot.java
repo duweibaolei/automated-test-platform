@@ -60,7 +60,7 @@ public abstract class AggregateRoot<ID extends Serializable> extends Entity<ID> 
      * 查看所有领域事件但不清空
      * Peek all domain events without clearing
      * <p>
-     * 适用于: 需要检查有哪些事件,但不消费(不删除)的场景。
+     * 适用于: 需要检查有哪些事件,但不消费(不删除)的场景
      * Suitable for: need to check what events exist, but not consume (not delete).
      *
      * @return Unmodifiable list of all domain events

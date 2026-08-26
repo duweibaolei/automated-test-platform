@@ -1,4 +1,4 @@
-package com.dwl.common.enums;
+package com.dwl.common.enums.test_management;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
