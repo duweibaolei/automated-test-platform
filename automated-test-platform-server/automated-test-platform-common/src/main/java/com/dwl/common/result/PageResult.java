@@ -12,9 +12,11 @@ import java.util.List;
 
 /**
  * 分页结果包装类
+ * <p>
  * Paginated Result Wrapper
  * <p>
- * 封装分页查询的结过数据,包含数据列表和分页元数据
+ * 封装分页查询的结过数据, 包含数据列表和分页元数据
+ * <p>
  * Wraps paginated query result data, including the data list and pagination metadata
  *
  * @param <T> List element generic type
@@ -60,6 +62,7 @@ public class PageResult<T> implements Serializable {
 
     /**
      * 根据分页参数构造分页结果
+     * <p>
      * Construct paginated result from pagination parameters
      *
      * @param data     Data list

@@ -7,9 +7,11 @@ import lombok.Getter;
 
 /**
  * 用例来源枚举
+ * <p>
  * Source Type Enumeration
  * <p>
- * 定义测试用例的来源方式,包括自动生成 / 手动录入和混合修改
+ * 定义测试用例的来源方式, 包括自动生成/手动录入和混合修改
+ * <p>
  * Defines the source type of test case, including auto-generated
  *
  * @Author Dwl
@@ -24,8 +26,8 @@ import lombok.Getter;
         """)
 public enum SourceType {
 
-    AUTO("auto", "自动生成"),
-    MANUAL("manual", "手动录入"),
+    AUTO("auto", "自动生成"), 
+    MANUAL("manual", "手动录入"), 
     HYBRID("hybrid", "混合修改");
 
     @Schema(description = """

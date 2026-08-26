@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 质量日统计 Mapper 接口
+ * <p>
  * Quality Daily Stats Mapper Interface
  *
  * @Author Dwl

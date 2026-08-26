@@ -8,9 +8,11 @@ import java.io.Serial;
 
 /**
  * 业务异常
+ * <p>
  * Business Exception
  * <p>
- * 业务逻辑中抛出的受检异常,携带 ErrorCode 枚举以标识具体错误类型
+ * 业务逻辑中抛出的受检异常, 携带 ErrorCode 枚举以标识具体错误类型
+ * <p>
  * Runtime exception thrown during business logic, carrying an ErrorCode enum
  * to identify the specific error type
  *

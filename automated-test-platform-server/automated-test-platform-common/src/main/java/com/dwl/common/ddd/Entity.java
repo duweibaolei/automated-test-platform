@@ -10,12 +10,14 @@ import java.io.Serializable;
 
 /**
  * DDD 实体基类
+ * <p>
  * DDD Entity Base Class
  * <p>
- * 所有有唯一标识的领域对象的基类,实体通过 ID 区分,
- * 即时其他属性相同,ID 不同就是不同的实体
- * Base class for all domain objects with a unique identity. Entities are
- * distinguished by ID; even if other attributes are the same, different IDs
+ * 所有有唯一标识的领域对象的基类, 实体通过 ID 区分, 即时其他属性相同, ID 不同就是不同的实体
+ * <p>
+ * Base class for all domain objects with a unique identity
+ * <p>
+ * Entities are distinguished by ID, even if other attributes are the same, different IDs
  * mean different entities
  *
  * @Author Dwl
@@ -34,6 +36,7 @@ public abstract class Entity<ID extends Serializable> implements Serializable {
 
     /**
      * 获取实体唯一标识
+     * <p>
      * Get entity unique identity
      *
      * @return Entity ID
@@ -42,6 +45,7 @@ public abstract class Entity<ID extends Serializable> implements Serializable {
 
     /**
      * 设置实体唯一标识
+     * <p>
      * Set entity unique identity
      *
      * @param id Entity ID

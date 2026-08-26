@@ -5,12 +5,14 @@ import com.dwl.common.exception.BusinessException;
 
 /**
  * 代码分析域业务异常
+ * <p>
  * Code Analysis Domain Business Exception
  * <p>
- * 代码分析域特有的业务异常类,继承自 BusinessException
+ * 代码分析域特有的业务异常类, 继承自 BusinessException
  * 用于在变更分析、Git 提交处理、影响范围分析等业务逻辑中抛出具体错误
  * <p>
- * Business exception class specific to the Code Analysis domain, extending BusinessException.
+ * Business exception class specific to the Code Analysis domain, extending BusinessException
+ * <p>
  * Used to throw specific errors in business logic such as change analysis, Git commit processing,
  * and affected scope analysis.
  *
@@ -22,6 +24,7 @@ public class CodeAnalysisException extends BusinessException {
 
     /**
      * 使用 ErrorCode 构造异常
+     * <p>
      * Construct exception with ErrorCode
      *
      * @param errorCode Error code enum
@@ -32,6 +35,7 @@ public class CodeAnalysisException extends BusinessException {
 
     /**
      * 使用 ErrorCode 和自定义消息构造异常
+     * <p>
      * Construct exception with ErrorCode and custom message
      *
      * @param errorCode Error code enum
@@ -43,6 +47,7 @@ public class CodeAnalysisException extends BusinessException {
 
     /**
      * 使用 ErrorCode 和原因异常构造异常
+     * <p>
      * Construct exception with ErrorCode and cause
      *
      * @param errorCode Error code enum
@@ -55,6 +60,7 @@ public class CodeAnalysisException extends BusinessException {
 
     /**
      * 使用 ErrorCode、自定义消息和原因异常构造异常
+     * <p>
      * Construct exception with ErrorCode, custom message, and cause
      *
      * @param errorCode Error code enum
@@ -72,6 +78,7 @@ public class CodeAnalysisException extends BusinessException {
 
     /**
      * 变更分析不存在异常
+     * <p>
      * Change analysis not found exception
      *
      * @param analysisNo 分析编号
@@ -85,6 +92,7 @@ public class CodeAnalysisException extends BusinessException {
 
     /**
      * 变更分析状态异常
+     * <p>
      * Change analysis status error exception
      *
      * @param currentStatus  当前状态
@@ -100,6 +108,7 @@ public class CodeAnalysisException extends BusinessException {
 
     /**
      * Git 仓库配置不存在异常
+     * <p>
      * Git repository not found exception
      *
      * @param repoId 仓库 ID
@@ -113,6 +122,7 @@ public class CodeAnalysisException extends BusinessException {
 
     /**
      * Git 连接失败异常
+     * <p>
      * Git connection failed exception
      *
      * @param repoUrl 仓库地址
@@ -127,7 +137,6 @@ public class CodeAnalysisException extends BusinessException {
     }
 
     /**
-     * Git 提交记录不存在异常
      * Git commit not found exception
      *
      * @param commitHash Commit Hash
@@ -140,6 +149,7 @@ public class CodeAnalysisException extends BusinessException {
 
     /**
      * 影响范围分析失败异常
+     * <p>
      * Affected scope analysis failed exception
      *
      * @param reason 失败原因
@@ -153,6 +163,7 @@ public class CodeAnalysisException extends BusinessException {
 
     /**
      * 变更分析与提交关联不存在异常
+     * <p>
      * Change analysis commit relation not found exception
      *
      * @param analysisId 分析 ID

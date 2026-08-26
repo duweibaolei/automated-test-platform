@@ -7,9 +7,11 @@ import lombok.Getter;
 
 /**
  * 任务状态编码
+ * <p>
  * Task Status Enumeration
  * <p>
  * 定义测试任务的生命周期状态
+ * <p>
  * Defines the lifecycle states of a test task
  *
  * @Author Dwl
@@ -24,14 +26,14 @@ import lombok.Getter;
         """)
 public enum TaskStatus {
 
-    PENDING("pending", "待执行"),
-    RUNNING("running", "执行中"),
-    PAUSED("paused", "已暂停"),
-    COMPLETED("completed", "已完成"),
-    FAILED("failed", "执行失败"),
-    CANCELLED("cancelled", "已取消"),
-    PASSED("passed", "通过"),
-    SKIPPED("skipped", "跳过"),
+    PENDING("pending", "待执行"), 
+    RUNNING("running", "执行中"), 
+    PAUSED("paused", "已暂停"), 
+    COMPLETED("completed", "已完成"), 
+    FAILED("failed", "执行失败"), 
+    CANCELLED("cancelled", "已取消"), 
+    PASSED("passed", "通过"), 
+    SKIPPED("skipped", "跳过"), 
     ERROR("error", "错误");
 
 

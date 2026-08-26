@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 缺陷记录 Mapper 接口
+ * <p>
  * Defect Record Mapper Interface
  *
  * @Author Dwl

@@ -7,15 +7,19 @@ import java.io.Serializable;
 
 /**
  * DDD 值对象标记接口
+ * <p>
  * DDD Value Object Marker Interface
  * <p>
- * 值对象没有唯一标识,通过属性值区分值对象是不可变的(Immutable),
- * 创建后不能修改,需要修改时创建新的值对象替换
+ * 值对象没有唯一标识, 通过属性值区分值对象是不可变的(Immutable), 创建后不能修改, 需要修改时创建新的值对象替换
+ * <p>
  * 典型值对象: 地址(Address)、金额(Money)、坐标(Coordinate)
  * <p>
- * Value Objects have no unique identity and are distinguished by attribute values.
+ * Value Objects have no unique identity and are distinguished by attribute values
+ * <p>
  * Value Objects are immutable; once created, they cannot be modified. When modification
- * is needed, create a new Value Object to replace. Typical VOs: Address, Money, Coordinate.
+ * is needed, create a new Value Object to replace
+ * <p>
+ * Typical VOs: Address, Money, Coordinate.
  *
  * @Author Dwl
  * @Version 1.0
@@ -29,6 +33,7 @@ public interface ValueObject extends Serializable {
 
     /**
      * 值对象通过所有属性值判断相等
+     * <p>
      * Value Objects are equal if all attribute values are equal
      *
      * @param o Other object
@@ -39,6 +44,7 @@ public interface ValueObject extends Serializable {
 
     /**
      * 值对象的哈希码基于所有属性
+     * <p>
      * Value Object hash code is based on all attributes
      *
      * @return Hash code

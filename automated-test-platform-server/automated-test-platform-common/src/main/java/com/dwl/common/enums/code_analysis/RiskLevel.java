@@ -1,4 +1,4 @@
-package com.dwl.common.enums;
+package com.dwl.common.enums.code_analysis;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -6,9 +6,11 @@ import lombok.Getter;
 
 /**
  * 风险等级枚举
+ * <p>
  * Risk Level Enumeration
  * <p>
  * 定义测试用例或缺陷的风险等级
+ * <p>
  * Defines the risk level of cases or defects, including high medium and low risk
  *
  * @Author Dwl
@@ -23,8 +25,8 @@ import lombok.Getter;
         """)
 public enum RiskLevel {
 
-    HIGH("high", "高风险"),
-    MEDIUM("medium", "中风险"),
+    HIGH("high", "高风险"), 
+    MEDIUM("medium", "中风险"), 
     LOW("low", "低风险");
 
     @Schema(description = """

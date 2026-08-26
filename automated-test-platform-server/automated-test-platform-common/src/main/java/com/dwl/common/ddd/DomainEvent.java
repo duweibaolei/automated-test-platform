@@ -11,12 +11,14 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * DDD 领域事件基类</br>
+ * DDD 领域事件基类
+ * <p>
  * DDD Domain Event Base Class
  * <p>
- * 领域事件表示领域中发生的有业务意义的事情,由聚合根在业务方法中产生,
- * 应用层在保存聚合根后发布,下游限界上下文异步进行消费</br>
+ * 领域事件表示领域中发生的有业务意义的事情, 由聚合根在业务方法中产生, 应用层在保存聚合根后发布, 下游限界上下文异步进行消费
+ * <p>
  * Domain Events represent something business-significant that happened in the domain.
+ * <p>
  * They are raised by aggregate roots in business methods, published by the application
  * layer after saving the aggregate root, and consumed asynchronously by downstream
  * bounded contexts

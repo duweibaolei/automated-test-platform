@@ -11,14 +11,20 @@ import java.util.Objects;
 
 /**
  * DDD 聚合根基类
+ * <p>
  * DDD Aggregate Root Base Class
  * <p>
- * 聚合根是聚合的入口,外部对象只能引用聚合根,不能直接引用聚合内的实体,
- * 聚合根负责维护聚合内的业务规则一致性,是事物的边界,一个事务只能修改一个聚合根
- * Aggregate Root is the entry point of an aggregate. External objects can only
- * reference the aggregate root, not entities within the aggregate. The aggregate
- * root is responsible for maintaining business rule consistency within the aggregate
- * and is the boundary of a transaction. One transaction modifies only one aggregate root.
+ * 聚合根是聚合的入口, 外部对象只能引用聚合根, 不能直接引用聚合内的实体, 聚合根负责
+ * 维护聚合内的业务规则一致性, 是事物的边界, 一个事务只能修改一个聚合根
+ * <p>
+ * Aggregate Root is the entry point of an aggregate
+ * <p>
+ * External objects can only reference the aggregate root, not entities within the aggregate
+ * <p>
+ * The aggregate root is responsible for maintaining business rule consistency within the aggregate
+ * and is the boundary of a transaction
+ * <p>
+ * One transaction modifies only one aggregate root
  *
  * @Author Dwl
  * @Version 1.0
@@ -42,6 +48,7 @@ public abstract class AggregateRoot<ID extends Serializable> extends Entity<ID> 
 
     /**
      * 注册领域事件(由聚合根的业务方法进行调用)
+     * <p>
      * Register a domain event (called by business methods of the aggregate root)
      *
      * @param event Domain event
@@ -53,15 +60,18 @@ public abstract class AggregateRoot<ID extends Serializable> extends Entity<ID> 
     }
 
     /* ================================================================
-     * 查看事件(查看但不清空) — Peek Events (view without clearing)
+     * 查看事件(查看但不清空)
+     * Peek Events (view without clearing)
      * ================================================================ */
 
     /**
      * 查看所有领域事件但不清空
+     * <p>
      * Peek all domain events without clearing
      * <p>
-     * 适用于: 需要检查有哪些事件,但不消费(不删除)的场景
-     * Suitable for: need to check what events exist, but not consume (not delete).
+     * 适用于: 需要检查有哪些事件, 但不消费(不删除)的场景
+     * <p>
+     * Suitable for: need to check what events exist, but not consume (not delete)
      *
      * @return Unmodifiable list of all domain events
      */
@@ -70,11 +80,13 @@ public abstract class AggregateRoot<ID extends Serializable> extends Entity<ID> 
     }
 
     /* ================================================================
-     * 判断与清空 — Check and Clear
+     * 判断与清空
+     * Check and Clear
      * ================================================================ */
 
     /**
      * 清空所有领域事件
+     * <p>
      * Clear all domain events
      */
     public void clearDomainEvents() {
@@ -83,6 +95,7 @@ public abstract class AggregateRoot<ID extends Serializable> extends Entity<ID> 
 
     /**
      * 按类型清空领域事件
+     * <p>
      * Clear domain events by type
      *
      * @param eventType Event class
@@ -93,6 +106,7 @@ public abstract class AggregateRoot<ID extends Serializable> extends Entity<ID> 
 
     /**
      * 判断是否有指定类型的领域事件
+     * <p>
      * Check if there are domain events of the specified type
      *
      * @param eventType Event class
@@ -104,6 +118,7 @@ public abstract class AggregateRoot<ID extends Serializable> extends Entity<ID> 
 
     /**
      * 判断是否有领域事件
+     * <p>
      * Check if there are any domain events
      *
      * @return true if has any domain events

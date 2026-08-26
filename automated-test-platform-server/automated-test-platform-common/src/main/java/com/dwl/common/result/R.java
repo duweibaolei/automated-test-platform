@@ -10,9 +10,11 @@ import java.io.Serializable;
 
 /**
  * 统一响应体
+ * <p>
  * Unified API Response Body
  * <p>
- * 所有 API 接口的统一返回值的统一包装类,包含状态码 消息 数据和时间戳
+ * 所有 API 接口的统一返回值的统一包装类, 包含状态码 消息 数据和时间戳
+ * <p>
  * Unified wrapper for all API response values,
  * containing status code message data and timestamp
  *
@@ -34,7 +36,7 @@ public class R<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 响应状态码,详见 {@link ErrorCode}
+     * 响应状态码, 详见 {@link ErrorCode}
      */
     @Schema(description = """
             响应状态码
@@ -91,6 +93,7 @@ public class R<T> implements Serializable {
 
     /**
      * 返回成功响应(无数据)
+     * <p>
      * Return success response without data
      *
      * @param <T> Data generic type
@@ -114,6 +117,7 @@ public class R<T> implements Serializable {
 
     /**
      * 返回成功响应(自定义消息和数据)
+     * <p>
      * Return success response with custom message and data
      *
      * @param data    Custom data
@@ -132,6 +136,7 @@ public class R<T> implements Serializable {
 
     /**
      * 返回失败响应(默认内部错误)
+     * <p>
      * Return failure response with default internal error
      *
      * @param <T> Data generic type
@@ -143,6 +148,7 @@ public class R<T> implements Serializable {
 
     /**
      * 返回失败响应(使用ErrorCode枚举)
+     * <p>
      * Return failure response using ErrorCode enum
      *
      * @param errorCode Error code enum
@@ -155,6 +161,7 @@ public class R<T> implements Serializable {
 
     /**
      * 返回失败响应(使用ErrorCode枚举和自定义消息)
+     * <p>
      * Return failure response using ErrorCode enum with custom message
      *
      * @param errorCode Error code enum

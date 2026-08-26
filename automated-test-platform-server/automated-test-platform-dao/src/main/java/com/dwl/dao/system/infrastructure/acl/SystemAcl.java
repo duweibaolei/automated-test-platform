@@ -13,15 +13,18 @@ import java.util.Optional;
 
 /**
  * 系统管理域防腐层
+ * <p>
  * System Management Domain Anti-Corruption Layer (ACL)
  * <p>
  * 供其他限界上下文调用系统管理域的适配器
- * 防腐层的作用: 将外部域的模型转换成系统管理域的模型,
- * 外部域变更时只需要修改 ACL,不影响系统管理域的领域逻辑
  * <p>
- * Adapter for other bounded contexts to call the System Management domain.
- * The ACL translates models from external domains to the System Management domain model.
- * When external domains change, only the ACL needs modification, not the domain logic.
+ * 防腐层的作用: 将外部域的模型转换成系统管理域的模型, 外部域变更时只需要修改 ACL, 不影响系统管理域的领域逻辑
+ * <p>
+ * Adapter for other bounded contexts to call the System Management domain
+ * <p>
+ * The ACL translates models from external domains to the System Management domain model
+ * <p>
+ * When external domains change, only the ACL needs modification, not the domain logic
  *
  * @Author Dwl
  * @Version 1.0
@@ -36,13 +39,15 @@ public class SystemAcl {
 
     /**
      * 根据用户 ID 获取用户简要信息
+     * <p>
      * Get user brief info by user ID
      * <p>
-     * 供其他域调用,返回传输对象,不暴露领域实体
+     * 供其他域调用, 返回传输对象, 不暴露领域实体
+     * <p>
      * Called by other domains, returns DTO, not exposing domain entity
      *
-     * @param userId 用户 ID / User ID
-     * @return 用户简要信息,未找到则为空 / User brief info, or empty if not found
+     * @param userId User ID
+     * @return User brief info, or empty if not found
      */
     public Optional<UserInfo> getUserInfo(Long userId) {
         if (Objects.isNull(userId)) {
@@ -57,10 +62,11 @@ public class SystemAcl {
 
     /**
      * 根据用户名获取用户简要信息
+     * <p>
      * Get user brief info by username
      *
-     * @param username 用户名 / Username
-     * @return 用户简要信息,未找到则为空 / User brief info, or empty if not found
+     * @param username Username
+     * @return User brief info, or empty if not found
      */
     public Optional<UserInfo> getUserInfoByUsername(String username) {
         if (StringUtils.isEmpty(username) || username.isEmpty()) {
@@ -77,10 +83,11 @@ public class SystemAcl {
 
     /**
      * 判断用户是否存在
+     * <p>
      * Check if user exists
      *
-     * @param userId 用户 ID / User ID
-     * @return 存在返回 true / true if exists
+     * @param userId User ID
+     * @return true if exists
      */
     public boolean userExists(Long userId) {
         return Objects.nonNull(userId) && userMapper.exists(new LambdaQueryWrapper<User>().eq(User::getId, userId));
@@ -88,15 +95,18 @@ public class SystemAcl {
 
     /**
      * 用户简要信息传输对象
+     * <p>
      * User Brief Info Data Transfer Object
      * <p>
-     * 防腐层返回的传输对象,其他域使用此对象,不直接依赖 User 实体
+     * 防腐层返回的传输对象, 其他域使用此对象, 不直接依赖 User 实体
+     * <p>
      * DTO returned by ACL, other domains use this instead of directly depending on User entity.
      *
-     * @param id       用户 ID / User ID
-     * @param username 用户名 / Username
-     * @param realName 真实姓名 / Real name
-     * @param email    邮箱 / Email
+     * @param id       User ID
+     * @param username Username
+     * @param realName 真实姓名
+     *                 Real name
+     * @param email    Email
      */
     public record UserInfo(
             Long id,

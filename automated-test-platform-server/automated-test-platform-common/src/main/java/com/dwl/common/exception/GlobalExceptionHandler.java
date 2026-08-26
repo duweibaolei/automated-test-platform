@@ -17,9 +17,11 @@ import java.util.stream.Collectors;
 
 /**
  * 全局异常处理器
+ * <p>
  * Global Exception Handler
  * <p>
- * 统一拦截并处理控制器层抛出的各类异常,将其转换为标准化的 R 响应体
+ * 统一拦截并处理控制器层抛出的各类异常, 将其转换为标准化的 R 响应体
+ * <p>
  * Uniformly intercepts and handles various exceptions thrown from the controller layer,
  * converting them into standardized R response bodies
  *
@@ -34,6 +36,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 处理业务异常
+     * <p>
      * Handle business exception
      *
      * @param e Business exception
@@ -48,8 +51,9 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理请求参数校验异常(@Valid / @RequestBody)
-     * Handle method argument validation exception (@Valid / @RequestBody)
+     * 处理请求参数校验异常(@Valid/@RequestBody)
+     * <p>
+     * Handle method argument validation exception (@Valid/@RequestBody)
      *
      * @param e 参数校验异常
      *          Method argument not valid exception
@@ -60,18 +64,17 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         /* 提取所有字段错误信息
-         * Extract all field error messages
-         * */
+         * Extract all field error messages */
         String message = e.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.joining("; "));
+                .map(FieldError::getDefaultMessage).collect(Collectors.joining("; "));
         log.warn("参数校验失败 / Validation failed: {}", message);
         return R.fail(ErrorCode.BAD_REQUEST, message);
     }
 
     /**
-     * 处理约束违反异常(@Validated / 路径参数、查询参数校验)
-     * Handle constraint violation exception (@Validated / path & query param validation)
+     * 处理约束违反异常(@Validated/路径参数、查询参数校验)
+     * <p>
+     * Handle constraint violation exception (@Validated/path & query param validation)
      *
      * @param e 约束违反异常
      *          Constraint violation exception
@@ -82,17 +85,16 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R<Void> handleConstraintViolationException(ConstraintViolationException e) {
         /* 提取所有约束违反信息
-         * Extract all constraint violation messages
-         * */
+         * Extract all constraint violation messages */
         String message = e.getConstraintViolations().stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.joining("; "));
+                .map(ConstraintViolation::getMessage).collect(Collectors.joining("; "));
         log.warn("约束违反 / Constraint violation: {}", message);
         return R.fail(ErrorCode.BAD_REQUEST, message);
     }
 
     /**
      * 处理请求体不可读异常(JSON解析错误等)
+     * <p>
      * Handle HTTP message not readable exception (JSON parse error, etc.)
      *
      * @param e 请求体不可读异常
@@ -109,6 +111,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 兜底异常处理(捕获所有未处理的异常)
+     * <p>
      * Fallback exception handler (catches all unhandled exceptions)
      *
      * @param e 未知异常

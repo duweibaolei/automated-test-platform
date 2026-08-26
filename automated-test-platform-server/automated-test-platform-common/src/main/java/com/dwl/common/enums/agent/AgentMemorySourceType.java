@@ -7,10 +7,12 @@ import lombok.Getter;
 
 /**
  * Agent 记忆来源类型枚举
+ * <p>
  * Agent Memory Source Type Enumeration
  * <p>
- * 定义 Agent 长期记忆的来源类型,包括风险分析、根因分析和手动标记
- * Defines the source type of Agent long-term memory, including risk analysis,
+ * 定义 Agent 长期记忆的来源类型, 包括风险分析、根因分析和手动标记
+ * <p>
+ * Defines the source type of Agent long-term memory, including risk analysis, 
  * root cause analysis, and manual marking
  *
  * @Author Dwl
@@ -27,18 +29,21 @@ public enum AgentMemorySourceType {
 
     /**
      * 风险分析来源
+     * <p>
      * Risk analysis source
      */
-    RISK_ANALYSIS("risk_analysis", "风险分析"),
+    RISK_ANALYSIS("risk_analysis", "风险分析"), 
 
     /**
      * 根因分析来源
+     * <p>
      * Root cause analysis source
      */
-    ROOT_CAUSE("root_cause", "根因分析"),
+    ROOT_CAUSE("root_cause", "根因分析"), 
 
     /**
      * 手动标记来源
+     * <p>
      * Manual marking source
      */
     MANUAL_MARK("manual_mark", "手动标记");

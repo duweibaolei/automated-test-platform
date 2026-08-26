@@ -7,9 +7,10 @@ import lombok.Getter;
 
 /**
  * 触发来源枚举
+ * <p>
  * Trigger Source Enumeration
  * <p>
- * 定义测试任务的触发方式,包括Webhook自动触发 / 手动触发和定时触发
+ * 定义测试任务的触发方式, 包括 Webhook 自动触发/手动触发和定时触发
  * Defines the trigger method of test tasks, including Webhook auto-trigger,
  * manual trigger, and scheduled trigger
  *

@@ -2,6 +2,7 @@ package com.dwl.common.base;
 
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.dwl.common.enums.DeletedStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -12,8 +13,9 @@ import java.time.LocalDateTime;
 /**
  * Base Entity Class
  * <p>
- * 所有数据库实体的公共父类,包含主键,逻辑删除标识和审计时间字段
- * Common parent class for all database entities, containing primary key id,
+ * 所有数据库实体的公共父类, 包含主键, 逻辑删除标识和审计时间字段
+ * <p>
+ * Common parent class for all database entities, containing primary key id, 
  * logical delete flag and audit timestamp fields
  *
  * @Author Dwl
@@ -38,9 +40,11 @@ public abstract class BaseEntity implements Serializable {
     private Long id;
 
     @Schema(description = """
-            逻辑删除标识(0=未删除, 1=已删除)
-            Logical delete flag (0=not deleted, 1=deleted)
-            """, example = "0")
+            逻辑删除标识
+            Logical delete flag
+            """, 
+            example = "0", 
+            implementation = DeletedStatus.class)
     @TableLogic
     private Integer isDelete;
 

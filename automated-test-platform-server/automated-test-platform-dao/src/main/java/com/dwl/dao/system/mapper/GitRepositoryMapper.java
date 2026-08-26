@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * Git 仓库配置 Mapper 接口
+ * <p>
  * Git Repository Mapper Interface
  *
  * @Author Dwl

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 手动失败标记 Mapper 接口
+ * <p>
  * Manual Failure Mark Mapper Interface
  *
  * @Author Dwl

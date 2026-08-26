@@ -8,9 +8,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 基础控制器
+ * <p>
  * Base Controller
  * <p>
- * 所有控制器的公共父类,提供统一的响应构建方法和当前登陆用户的信息获取
+ * 所有控制器的公共父类, 提供统一的响应构建方法和当前登陆用户的信息获取
+ * <p>
  * Common parent class for all controller, providing unified response building
  * methods and current login user information retrieval
  *

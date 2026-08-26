@@ -37,7 +37,7 @@ public class JwtUtil {
     private String secret;
 
     /**
-     * JWT 过期时间(毫秒,从配置文件读取,默认 24 小时)
+     * JWT 过期时间(毫秒, 从配置文件读取, 默认 24 小时)
      * JWT expiration time in milliseconds(read from configuration, default 24 hours)
      */
     @Value("${jwt.expiration:86400000}")
@@ -104,8 +104,7 @@ public class JwtUtil {
      * 判断 JWT 令牌是否已过期
      * Check if JWT token is expired
      *
-     * @param token JWT 令牌
-     *              JWT token
+     * @param token JWT token
      * @return 是否已过期
      * Whether the token is expired
      */
@@ -119,7 +118,7 @@ public class JwtUtil {
              * */
             return true;
         } catch (JwtException e) {
-            /* 令牌无效,视为过期
+            /* 令牌无效, 视为过期
              * Token is invalid, treat as expired
              *  */
             log.warn("JWT令牌无效 / Invalid JWT token: {}", e.getMessage());
@@ -131,8 +130,8 @@ public class JwtUtil {
      * 从 JWT 令牌中获取用户 ID
      * Get user ID from JWT token
      *
-     * @param token JWT令牌 / JWT token
-     * @return 用户ID / User ID
+     * @param token JWT token
+     * @return User ID
      */
     public Long getUserIdFromToken(String token) {
         Claims claims = parseToken(token);
@@ -143,10 +142,8 @@ public class JwtUtil {
      * 从 JWT 令牌中获取用户名
      * Get username from JWT token
      *
-     * @param token JWT令牌
-     *              JWT token
-     * @return 用户名
-     * Username
+     * @param token JWT token
+     * @return Username
      */
     public String getUsernameFromToken(String token) {
         Claims claims = parseToken(token);

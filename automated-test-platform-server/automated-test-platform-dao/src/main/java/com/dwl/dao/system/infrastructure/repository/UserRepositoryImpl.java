@@ -20,15 +20,20 @@ import java.util.Optional;
  * 用户仓储实现
  * User Repository Implementation
  * <p>
- * 基础设施层,实现领域层定义的 UserRepository 接口
- * 基于 MyBatis-Plus Mapper 直接操作聚合根,聚合根带 @TableName 可直接持久化
+ * 基础设施层, 实现领域层定义的 UserRepository 接口
+ * <p>
+ * 基于 MyBatis-Plus Mapper 直接操作聚合根, 聚合根带 @TableName 可直接持久化
  * 保存时同时保存聚合内的 UserRole 实体 (先删后插保证幂等)
  * <p>
- * Infrastructure layer implementing the UserRepository interface defined in the domain layer.
- * Uses MyBatis-Plus Mapper to operate on aggregate roots directly. Aggregate roots with
- *
- * @TableName can be persisted directly. When saving, also save UserRole entities within
+ * Infrastructure layer implementing the UserRepository interface defined in the domain layer
+ * <p>
+ * Uses MyBatis-Plus Mapper to operate on aggregate roots directly
+ * <p>
+ * Aggregate roots with TableName can be persisted directly
+ * <p>
+ * When saving, also save UserRole entities within
  * the aggregate (delete-then-insert for idempotency).
+ *
  * @Author Dwl
  * @Version 1.0
  * @Since 2026-08-26 21:41
@@ -43,10 +48,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     /**
      * 根据 ID 查找用户
+     * <p>
      * Find user by ID
      *
      * @param id User ID
-     * @return 用户对象,未找到则为 null
+     * @return 用户对象, 未找到则为 null
      * User object, or null if not found
      */
     @Override
@@ -61,6 +67,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     /**
      * 根据用户名查找用户
+     * <p>
      * Find user by username
      *
      * @param username Username
@@ -79,6 +86,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     /**
      * 判断用户名是否存在
+     * <p>
      * Check if username exists
      *
      * @param username Username
@@ -93,7 +101,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     /**
-     * 保存用户
      * Save user
      *
      * @param user User object
@@ -105,7 +112,7 @@ public class UserRepositoryImpl implements UserRepository {
         // Save user main table
         userMapper.insertOrUpdate(user);
 
-        // 保存聚合内的角色关联 (先删后插,保证幂等)
+        // 保存聚合内的角色关联 (先删后插, 保证幂等)
         LambdaUpdateWrapper<UserRole> deleteWrapper = new LambdaUpdateWrapper<UserRole>()
                 .eq(UserRole::getUserId, user.getId());
         userRoleMapper.delete(deleteWrapper);
@@ -121,7 +128,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     /**
-     * 根据 ID 删除用户
      * Delete user by ID
      *
      * @param id User ID
@@ -141,7 +147,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     /**
-     * 判断用户是否存在
      * Check if user exists
      *
      * @param id User ID
@@ -161,6 +166,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     /**
      * 加载聚合内的角色关联
+     * <p>
      * Load role associations within aggregate
      *
      * @param user User object
