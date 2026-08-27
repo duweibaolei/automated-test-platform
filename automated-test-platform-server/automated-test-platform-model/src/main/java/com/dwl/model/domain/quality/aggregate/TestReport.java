@@ -2,10 +2,10 @@ package com.dwl.model.domain.quality.aggregate;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.dwl.common.ddd.AggregateRoot;
+import com.dwl.common.enums.CaseStatus;
 import com.dwl.common.enums.DeletedStatus;
 import com.dwl.common.enums.SelectedStatus;
 import com.dwl.common.enums.SourceType;
-import com.dwl.common.enums.quality.ReportStatus;
 import com.dwl.common.enums.quality.ReportType;
 import com.dwl.model.domain.quality.entity.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -149,7 +149,7 @@ public class TestReport extends AggregateRoot<Long> {
             状态
             Status: draft-draft, published-published
             """, example = "draft",
-            implementation = ReportStatus.class)
+            implementation = CaseStatus.class)
     private String status;
 
     @Schema(description = """
@@ -217,7 +217,7 @@ public class TestReport extends AggregateRoot<Long> {
                 .reportNo(reportNo).taskId(taskId).reportType(reportType).triggerSource(triggerSource)
                 .totalCount(totalCount).passCount(passCount).failCount(failCount).skipCount(skipCount)
                 .passRate(passRate).durationMs(durationMs).aiAnalyzed(SelectedStatus.NOT_SELECTED.getValue())
-                .status(ReportStatus.DRAFT.getCode())
+                .status(CaseStatus.DRAFT.getCode())
                 .executionRelations(new ArrayList<>()).aiRootCauses(new ArrayList<>()).manualFailureMarks(new ArrayList<>())
                 .build();
     }
@@ -327,10 +327,10 @@ public class TestReport extends AggregateRoot<Long> {
      * Publish report
      */
     public void publish() {
-        if (!ReportStatus.DRAFT.getCode().equals(this.status)) {
+        if (!CaseStatus.DRAFT.getCode().equals(this.status)) {
             throw new IllegalStateException("Only draft reports can be published, current status: " + this.status);
         }
-        this.status = ReportStatus.PUBLISHED.getCode();
+        this.status = CaseStatus.PUBLISHED.getCode();
     }
 
     /**

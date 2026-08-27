@@ -2,18 +2,25 @@ package com.dwl.model.domain.test_management.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.dwl.common.ddd.Entity;
+import com.dwl.common.enums.DeletedStatus;
+import com.dwl.common.enums.testmanagement.AffectedType;
+import com.dwl.common.enums.testmanagement.HandlingStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 用例与分析关联实体
+ * <p>
  * Case-Analysis Association Entity
  * <p>
- * TestCase 聚合根内的实体, 用例与变更分析的多对多关联, 包含受影响类型和处理状态
+ * TestCase 聚合根内的实体，用例与变更分析的多对多关联，包含受影响类型和处理状态
+ * <p>
  * Entity within TestCase aggregate root, many-to-many association between cases
- * and change analyses, including affected type and handling status.
+ * and change analyses, including affected type and handling status
  *
  * @Author Dwl
  * @Version 1.0
@@ -31,6 +38,7 @@ import java.time.LocalDateTime;
         """)
 public class CaseAnalysisRelation extends Entity<Long> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Schema(description = """
@@ -53,45 +61,59 @@ public class CaseAnalysisRelation extends Entity<Long> {
 
     @Schema(description = """
             受影响类型
-            Affected type: added-modified, modified-modified, deleted-deleted, risk_affected-risk affected
-            """, example = "modified")
+            Affected type
+            """, example = "modified",
+            implementation = AffectedType.class)
     private String affectedType;
 
     @Schema(description = """
             处理状态
-            Handling status: pending-pending, tested-tested, bypassed-bypassed
-            """, example = "pending")
+            Handling status
+            """, example = "pending", implementation = HandlingStatus.class)
     private String handlingStatus;
 
     @Schema(description = """
-            逻辑删除标识
-            Logical delete flag: 0-not deleted, 1-deleted
-            """)
+            Logical delete flag
+            """, example = "0",
+            implementation = DeletedStatus.class)
     private Integer isDelete;
 
     @Schema(description = """
-            创建时间
             Create time
             """)
     private LocalDateTime createdAt;
 
     @Schema(description = """
-            更新时间
             Update time
             """)
     private LocalDateTime updatedAt;
 
     /**
-     * 工厂方法: 创建用例与分析关联
+     * 工厂方法：创建用例与分析关联
+     * <p>
      * Factory Method: Create case-analysis relation
      *
-     * @param caseId         用例 ID / Case ID
-     * @param analysisId     分析 ID / Analysis ID
-     * @param affectedType   受影响类型 / Affected type
-     * @param handlingStatus 处理状态 / Handling status
-     * @return 新关联实体 / New association entity
+     * @param caseId         Case ID
+     * @param analysisId     分析 ID
+     *                       Analysis ID
+     * @param affectedType   受影响类型
+     *                       Affected type
+     * @param handlingStatus 处理状态
+     *                       Handling status
+     * @return 新关联实体
+     * New association entity
+     * @throws IllegalArgumentException 当受影响类型或处理状态不合法时
+     *                                  When affected type or handling status is invalid
      */
     public static CaseAnalysisRelation create(Long caseId, Long analysisId, String affectedType, String handlingStatus) {
+        if (!AffectedType.exists(affectedType)) {
+            throw new IllegalArgumentException("Invalid affected type: " + affectedType);
+        }
+
+        if (Objects.nonNull(handlingStatus) && !HandlingStatus.exists(handlingStatus)) {
+            throw new IllegalArgumentException("Invalid handling status: " + handlingStatus);
+        }
+
         return CaseAnalysisRelation.builder()
                 .caseId(caseId).analysisId(analysisId)
                 .affectedType(affectedType).handlingStatus(handlingStatus).build();
@@ -102,7 +124,7 @@ public class CaseAnalysisRelation extends Entity<Long> {
      * Mark as tested
      */
     public void markTested() {
-        this.handlingStatus = "tested";
+        this.handlingStatus = HandlingStatus.TESTED.getCode();
     }
 
     /**
@@ -110,7 +132,24 @@ public class CaseAnalysisRelation extends Entity<Long> {
      * Mark as bypassed
      */
     public void markBypassed() {
-        this.handlingStatus = "bypassed";
+        this.handlingStatus = HandlingStatus.BYPASSED.getCode();
+    }
+
+    /**
+     * 更新处理状态
+     * <p>
+     * Update handling status
+     *
+     * @param newStatus 新处理状态
+     *                  New handling status
+     * @throws IllegalArgumentException 当处理状态不合法时
+     *                                  When handling status is invalid
+     */
+    public void updateHandlingStatus(String newStatus) {
+        if (!HandlingStatus.exists(newStatus)) {
+            throw new IllegalArgumentException("Invalid handling status: " + newStatus);
+        }
+        this.handlingStatus = newStatus;
     }
 
 }

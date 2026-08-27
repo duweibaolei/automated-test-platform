@@ -10,6 +10,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 用例步骤实体
@@ -78,8 +79,9 @@ public class CaseStep extends Entity<Long> {
 
     @Schema(description = """
             断言类型
-            Assert type: url_contains-URL 包含检查，url_match-URL 完全匹配，visible-元素可见性检查，hidden-元素隐藏检查，text_match-文本完全匹配，text_contains-文本包含检查，value_match-值完全匹配，value_contains-值包含检查，attribute-属性检查，count-元素数量检查，enabled-元素启用状态检查，disabled-元素禁用状态检查
-            """, example = "visible")
+            Assert type
+            """, example = "visible",
+            implementation = AssertType.class)
     private String assertType;
 
     @Schema(description = """
@@ -122,21 +124,27 @@ public class CaseStep extends Entity<Long> {
      * Factory Method: Create case step
      *
      * @param caseId      Case ID
-     * @param stepOrder   步骤顺序 Step order
-     * @param elementId   操作元素 ID Operation element ID
-     * @param actionType  动作类型 Action type
-     * @param actionValue 输入值 Action value
-     * @param assertType  断言类型 Assert type
-     * @param assertValue 断言期望值 Assert expected value
-     * @param waitTimeout 等待超时 Wait timeout
-     * @return 新用例步骤 New case step
-     * @throws IllegalArgumentException 当断言类型不合法时 When assert type is invalid
+     * @param stepOrder   步骤顺序
+     *                    Step order
+     * @param elementId   操作元素
+     *                    ID Operation element ID
+     * @param actionType  动作类型
+     *                    Action type
+     * @param actionValue 输入值
+     *                    Action value
+     * @param assertType  断言类型
+     *                    Assert type
+     * @param assertValue 断言期望值
+     *                    Assert expected value
+     * @param waitTimeout 等待超时
+     *                    Wait timeout
+     * @return New case step
+     * @throws IllegalArgumentException 当断言类型不合法时
+     * When assert type is invalid
      */
     public static CaseStep create(Long caseId, Integer stepOrder, Long elementId, String actionType,
                                   String actionValue, String assertType, String assertValue, Integer waitTimeout) {
-        // 验证断言类型是否合法（允许 null，表示无需断言）
-        // Validate assert type (null allowed for steps without assertion)
-        if (assertType != null && !AssertType.exists(assertType)) {
+        if (Objects.nonNull(assertType) && !AssertType.exists(assertType)) {
             throw new IllegalArgumentException("Invalid assert type: " + assertType);
         }
 

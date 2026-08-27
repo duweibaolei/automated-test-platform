@@ -2,8 +2,9 @@ package com.dwl.model.domain.test_management.aggregate;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.dwl.common.ddd.AggregateRoot;
+import com.dwl.common.enums.DeletedStatus;
 import com.dwl.common.enums.EnableStatus;
-import com.dwl.common.enums.testmanagement.ElementSource;
+import com.dwl.common.enums.SourceType;
 import com.dwl.common.enums.testmanagement.LocatorType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -62,8 +63,9 @@ public class PageElement extends AggregateRoot<Long> {
 
     @Schema(description = """
             主定位类型
-            Primary locator type: css-CSS 选择器，xpath-XPath 表达式，id-ID 属性，data-testid-data-testid 属性，name-Name 属性，className-Class Name 属性，tagName-Tag Name 属性，linkText-链接文本，partialLinkText-部分链接文本
-            """, example = "css")
+            Primary locator type
+            """, example = "css",
+            implementation = LocatorType.class)
     private String locatorType;
 
     @Schema(description = """
@@ -85,26 +87,25 @@ public class PageElement extends AggregateRoot<Long> {
     private String backupLocatorValue;
 
     @Schema(description = """
-            描述
             Description
             """)
     private String description;
 
     @Schema(description = """
-            来源
-            Source: auto-自动识别，manual-手动录入，hybrid-混合模式
-            """, example = "manual")
+            Source
+            """, example = "manual",
+            implementation = SourceType.class)
     private String source;
 
     @Schema(description = """
-            状态
             Status: 1-enabled, 0-disabled
             """, example = "1", implementation = EnableStatus.class)
     private Integer status;
 
     @Schema(description = """
             Logical delete flag
-            """)
+            """, example = "0",
+            implementation = DeletedStatus.class)
     private Integer isDelete;
 
     @Schema(description = """
@@ -118,7 +119,8 @@ public class PageElement extends AggregateRoot<Long> {
     private LocalDateTime updatedAt;
 
     /* ================================================================
-     * 业务方法 / Business Methods
+     * 业务方法
+     * Business Methods
      * ================================================================ */
 
     /**
@@ -126,26 +128,25 @@ public class PageElement extends AggregateRoot<Long> {
      * <p>
      * Factory Method: Create page element
      *
-     * @param elementCode  元素编码 Element code
-     * @param elementName  元素名称 Element name
-     * @param pageName     所属页面 Page name
-     * @param locatorType  主定位类型 Primary locator type
-     * @param locatorValue 主定位值 Primary locator value
-     * @param source       来源 Source
-     * @return 新页面元素 New page element
-     * @throws IllegalArgumentException 当定位类型或来源不合法时 When locator type or source is invalid
+     * @param elementCode  Element code
+     * @param elementName  Element name
+     * @param pageName     Page name
+     * @param locatorType  主定位类型
+     *                     Primary locator type
+     * @param locatorValue 主定位值
+     *                     Primary locator value
+     * @param source       Source
+     * @return New page element
+     * @throws IllegalArgumentException 当定位类型或来源不合法时
+     *                                  When locator type or source is invalid
      */
     public static PageElement create(String elementCode, String elementName, String pageName,
                                      String locatorType, String locatorValue, String source) {
-        // 验证定位类型是否合法
-        // Validate locator type
         if (!LocatorType.exists(locatorType)) {
             throw new IllegalArgumentException("Invalid locator type: " + locatorType);
         }
 
-        // 验证来源是否合法
-        // Validate source
-        if (!ElementSource.exists(source)) {
+        if (!SourceType.exists(source)) {
             throw new IllegalArgumentException("Invalid source: " + source);
         }
 
@@ -160,9 +161,12 @@ public class PageElement extends AggregateRoot<Long> {
      * <p>
      * Update locator
      *
-     * @param locatorType  定位类型 Locator type
-     * @param locatorValue 定位值 Locator value
-     * @throws IllegalArgumentException 当定位类型不合法时 When locator type is invalid
+     * @param locatorType  定位类型
+     *                     Locator type
+     * @param locatorValue 定位值
+     *                     Locator value
+     * @throws IllegalArgumentException 当定位类型不合法时
+     *                                  When locator type is invalid
      */
     public void updateLocator(String locatorType, String locatorValue) {
         if (!LocatorType.exists(locatorType)) {

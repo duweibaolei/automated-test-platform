@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 
 /**
  * 用例与链路关联实体
+ * <p>
  * Case-Link Association Entity
  * <p>
  * TestCase 聚合根内的实体, 用例与业务链路的多对多关联
+ * <p>
  * Entity within TestCase aggregate root, many-to-many association between cases and business links.
  *
  * @Author Dwl

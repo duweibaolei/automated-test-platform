@@ -3,6 +3,8 @@ package com.dwl.common.enums.testmanagement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * 元素定位类型枚举
  *
@@ -107,6 +109,6 @@ public enum LocatorType {
      * @return  Whether it exists
      */
     public static boolean exists(String code) {
-        return fromCode(code) != null;
+        return Objects.nonNull(fromCode(code));
     }
 }

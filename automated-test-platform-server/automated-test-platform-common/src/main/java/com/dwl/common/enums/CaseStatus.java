@@ -1,4 +1,4 @@
-package com.dwl.common.enums.test_management;
+package com.dwl.common.enums;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,21 +31,27 @@ public enum CaseStatus {
      * <p>
      * Active (normally usable)
      */
-    ACTIVE("active", "活跃"), 
+    ACTIVE("active", "活跃"),
 
     /**
      * 不稳定(偶尔失败)
      * <p>
      * Unstable (occasionally fails)
      */
-    UNSTABLE("unstable", "不稳定"), 
+    UNSTABLE("unstable", "不稳定"),
 
     /**
      * 已禁用
      * <p>
      * Disabled
      */
-    DISABLED("disabled", "已禁用"), 
+    DISABLED("disabled", "已禁用"),
+
+    /**
+     * 已发布 - 报告已发布可供查看
+     * Published - report is published and available for viewing
+     */
+    PUBLISHED("published", "已发布"),
 
     /**
      * 草稿

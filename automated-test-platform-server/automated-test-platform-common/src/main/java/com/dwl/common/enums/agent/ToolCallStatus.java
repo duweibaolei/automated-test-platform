@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * 工具调用状态枚举
  * Tool Call Status Enumeration
@@ -86,7 +88,7 @@ public enum ToolCallStatus {
      * @return true if success
      */
     public static boolean isSuccess(String code) {
-        return code != null && SUCCESS.code.equals(code);
+        return Objects.nonNull(code) && SUCCESS.code.equals(code);
     }
 
     /**
@@ -97,7 +99,7 @@ public enum ToolCallStatus {
      * @return true if failed
      */
     public static boolean isFailed(String code) {
-        return code != null && (FAILED.code.equals(code) || TIMEOUT.code.equals(code));
+        return Objects.nonNull(code) && (FAILED.code.equals(code) || TIMEOUT.code.equals(code));
     }
 
 }

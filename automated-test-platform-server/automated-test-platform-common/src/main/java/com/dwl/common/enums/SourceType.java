@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * 用例来源枚举
  * <p>
@@ -42,4 +44,30 @@ public enum SourceType {
             Source type description
             """, example = "自动生成")
     private final String description;
+
+
+    /**
+     * Get enum by code
+     *
+     * @param code Code
+     * @return Enum value, or null if not found
+     */
+    public static SourceType fromCode(String code) {
+        for (SourceType source : values()) {
+            if (source.getCode().equals(code)) {
+                return source;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Check if code exists
+     *
+     * @param code Code
+     * @return Whether it exists
+     */
+    public static boolean exists(String code) {
+        return Objects.nonNull(fromCode(code));
+    }
 }

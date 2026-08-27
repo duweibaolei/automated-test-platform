@@ -3,6 +3,8 @@ package com.dwl.common.enums.testmanagement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * 断言类型枚举
  * <p>
@@ -122,6 +124,6 @@ public enum AssertType {
      * @return Whether it exists
      */
     public static boolean exists(String code) {
-        return fromCode(code) != null;
+        return Objects.nonNull(fromCode(code));
     }
 }

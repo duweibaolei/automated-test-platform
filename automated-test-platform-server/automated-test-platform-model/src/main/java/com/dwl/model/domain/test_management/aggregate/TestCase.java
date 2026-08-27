@@ -5,7 +5,8 @@ import com.baomidou.mybatisplus.annotation.Version;
 import com.dwl.common.ddd.AggregateRoot;
 import com.dwl.common.enums.DeletedStatus;
 import com.dwl.common.enums.SourceType;
-import com.dwl.common.enums.test_management.CaseStatus;
+import com.dwl.common.enums.CaseStatus;
+import com.dwl.common.enums.testmanagement.HandlingStatus;
 import com.dwl.model.domain.test_management.entity.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -167,18 +168,24 @@ public class TestCase extends AggregateRoot<Long> {
 
     /**
      * 工厂方法: 创建测试用例
+     * <p>
      * Factory Method: Create test case
      *
-     * @param caseNo       用例编号 / Case number
-     * @param caseName     用例名称 / Case name
-     * @param moduleName   所属模块 / Module name
-     * @param source       来源 / Source
-     * @param priority     优先级 / Priority
-     * @param description  用例描述 / Case description
-     * @param preCondition 前置条件 / Pre-condition
-     * @param envId        执行环境 ID / Execution environment ID
-     * @param createdBy    创建人 ID / Creator user ID
-     * @return 新测试用例 / New test case
+     * @param caseNo       Case number
+     * @param caseName     Case name
+     * @param moduleName   所属模块
+     *                     Module name
+     * @param source       Source
+     * @param priority     优先级
+     *                     Priority
+     * @param description  用例描述
+     *                     Case description
+     * @param preCondition 前置条件
+     *                     Pre-condition
+     * @param envId        执行环境 ID
+     *                     Execution environment ID
+     * @param createdBy    Creator user ID
+     * @return New test case
      */
     public static TestCase create(String caseNo, String caseName, String moduleName,
                                   String source, String priority, String description,
@@ -187,7 +194,7 @@ public class TestCase extends AggregateRoot<Long> {
                 .caseNo(caseNo).caseName(caseName).moduleName(moduleName)
                 .source(source).priority(priority).description(description)
                 .preCondition(preCondition).envId(envId).createdBy(createdBy)
-                .lastModifiedBy(createdBy).status("draft").healthScore(100).version(1)
+                .lastModifiedBy(createdBy).status(CaseStatus.DRAFT.getCode()).healthScore(100).version(1)
                 .steps(new ArrayList<>()).versions(new ArrayList<>())
                 .tagRelations(new ArrayList<>()).linkRelations(new ArrayList<>())
                 .analysisRelations(new ArrayList<>())
@@ -195,16 +202,21 @@ public class TestCase extends AggregateRoot<Long> {
     }
 
     /**
-     * 添加步骤
      * Add step
      *
-     * @param stepOrder   步骤顺序 / Step order
-     * @param elementId   元素 ID / Element ID
-     * @param actionType  动作类型 / Action type
-     * @param actionValue 动作值 / Action value
-     * @param assertType  断言类型 / Assert type
-     * @param assertValue 断言值 / Assert value
-     * @param waitTimeout 等待超时 / Wait timeout
+     * @param stepOrder   步骤顺序
+     *                    Step order
+     * @param elementId   Element ID
+     * @param actionType  动作类型
+     *                    Action type
+     * @param actionValue 动作值
+     *                    Action value
+     * @param assertType  断言类型
+     *                    Assert type
+     * @param assertValue 断言值
+     *                    Assert value
+     * @param waitTimeout 等待超时
+     *                    Wait timeout
      */
     public void addStep(Integer stepOrder, Long elementId, String actionType, String actionValue,
                         String assertType, String assertValue, Integer waitTimeout) {
@@ -216,9 +228,12 @@ public class TestCase extends AggregateRoot<Long> {
      * 创建版本快照
      * Create version snapshot
      *
-     * @param snapshotJson  快照 JSON / Snapshot JSON
-     * @param changeSummary 变更摘要 / Change summary
-     * @param modifiedBy    修改人 ID / Modifier user ID
+     * @param snapshotJson  快照 JSON
+     *                      Snapshot JSON
+     * @param changeSummary 变更摘要
+     *                      Change summary
+     * @param modifiedBy    修改人 ID
+     *                      Modifier user ID
      */
     public void createVersion(String snapshotJson, String changeSummary, Long modifiedBy) {
         this.versions.add(CaseVersion.create(this.id, this.version, snapshotJson, changeSummary, modifiedBy));
@@ -229,7 +244,7 @@ public class TestCase extends AggregateRoot<Long> {
      * Publish case
      */
     public void publish() {
-        this.status = "active";
+        this.status = CaseStatus.ACTIVE.getCode();
     }
 
     /**
@@ -237,7 +252,7 @@ public class TestCase extends AggregateRoot<Long> {
      * Disable case
      */
     public void disable() {
-        this.status = "disabled";
+        this.status = CaseStatus.DISABLED.getCode();
     }
 
     /**
@@ -245,25 +260,28 @@ public class TestCase extends AggregateRoot<Long> {
      * Mark as unstable
      */
     public void markUnstable() {
-        this.status = "unstable";
+        this.status = CaseStatus.UNSTABLE.getCode();
     }
 
     /**
      * 标记为受分析影响
      * Mark as affected by analysis
      *
-     * @param analysisId   分析 ID / Analysis ID
-     * @param affectedType 影响类型 / Affected type
+     * @param analysisId   分析 ID
+     *                     Analysis ID
+     * @param affectedType 影响类型
+     *                     Affected type
      */
     public void markAffectedByAnalysis(Long analysisId, String affectedType) {
-        this.analysisRelations.add(CaseAnalysisRelation.create(this.id, analysisId, affectedType, "pending"));
+        this.analysisRelations.add(CaseAnalysisRelation.create(this.id, analysisId, affectedType, HandlingStatus.PENDING.getCode()));
     }
 
     /**
      * 获取步骤列表
      * Get step list
      *
-     * @return 不可变步骤列表 / Unmodifiable step list
+     * @return 不可变步骤列表
+     * Unmodifiable step list
      */
     public List<CaseStep> getSteps() {
         return Collections.unmodifiableList(this.steps);
@@ -273,7 +291,8 @@ public class TestCase extends AggregateRoot<Long> {
      * 获取版本列表
      * Get version list
      *
-     * @return 不可变版本列表 / Unmodifiable version list
+     * @return 不可变版本列表
+     * Unmodifiable version list
      */
     public List<CaseVersion> getVersions() {
         return Collections.unmodifiableList(this.versions);
@@ -283,7 +302,8 @@ public class TestCase extends AggregateRoot<Long> {
      * 获取标签关联列表
      * Get tag relation list
      *
-     * @return 不可变标签关联列表 / Unmodifiable tag relation list
+     * @return 不可变标签关联列表
+     * Unmodifiable tag relation list
      */
     public List<CaseTagRelation> getTagRelations() {
         return Collections.unmodifiableList(this.tagRelations);
@@ -293,7 +313,8 @@ public class TestCase extends AggregateRoot<Long> {
      * 获取链路关联列表
      * Get link relation list
      *
-     * @return 不可变链路关联列表 / Unmodifiable link relation list
+     * @return 不可变链路关联列表
+     * Unmodifiable link relation list
      */
     public List<CaseLinkRelation> getLinkRelations() {
         return Collections.unmodifiableList(this.linkRelations);
@@ -303,7 +324,8 @@ public class TestCase extends AggregateRoot<Long> {
      * 获取分析关联列表
      * Get analysis relation list
      *
-     * @return 不可变分析关联列表 / Unmodifiable analysis relation list
+     * @return 不可变分析关联列表
+     * Unmodifiable analysis relation list
      */
     public List<CaseAnalysisRelation> getAnalysisRelations() {
         return Collections.unmodifiableList(this.analysisRelations);
