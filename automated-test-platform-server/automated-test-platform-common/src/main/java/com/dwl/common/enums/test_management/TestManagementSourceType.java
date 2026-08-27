@@ -24,7 +24,7 @@ import lombok.Getter;
         用例来源枚举
         Source Type Enumeration
         """)
-public enum SourceType {
+public enum TestManagementSourceType {
 
     AUTO("auto", "自动生成"), 
     MANUAL("manual", "手动录入"), 
