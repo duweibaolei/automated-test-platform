@@ -3,7 +3,7 @@ package com.dwl.model.domain.test_management.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.dwl.common.ddd.Entity;
 import com.dwl.common.enums.DeletedStatus;
-import com.dwl.common.enums.testmanagement.AssertType;
+import com.dwl.common.enums.execution.AssertType;
 import com.dwl.common.enums.execution.ActionType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
