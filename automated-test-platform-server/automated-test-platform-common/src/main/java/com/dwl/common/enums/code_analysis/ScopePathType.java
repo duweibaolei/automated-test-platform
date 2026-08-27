@@ -9,7 +9,7 @@ import lombok.Getter;
  * <p>
  * Scope Path Type Enumeration
  * <p>
- * 用于表示影响范围路径的格式类型。
+ * 用于表示影响范围路径的格式类型
  * <p>
  * Used to represent the format type of affected scope path.
  *

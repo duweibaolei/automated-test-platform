@@ -9,7 +9,7 @@ import lombok.Getter;
  * <p>
  * Execution Node Status Enumeration
  * <p>
- * 定义执行节点的运行状态，包括健康、离线、忙碌等状态
+ * 定义执行节点的运行状态, 包括健康、离线、忙碌等状态
  * <p>
  * Defines the runtime status of execution nodes, including healthy, offline, busy, etc.
  *

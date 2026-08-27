@@ -8,7 +8,7 @@ import lombok.Getter;
  * 记忆类型枚举
  * Memory Type Enumeration
  * <p>
- * 用于表示 Agent 长期记忆的类型。
+ * 用于表示 Agent 长期记忆的类型
  * <p>
  * Used to represent the type of Agent long-term memory.
  *

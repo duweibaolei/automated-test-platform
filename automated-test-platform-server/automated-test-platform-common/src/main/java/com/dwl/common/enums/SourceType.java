@@ -1,4 +1,4 @@
-package com.dwl.common.enums.test_management;
+package com.dwl.common.enums;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,10 +24,11 @@ import lombok.Getter;
         用例来源枚举
         Source Type Enumeration
         """)
-public enum TestManagementSourceType {
+public enum SourceType {
 
-    AUTO("auto", "自动生成"), 
-    MANUAL("manual", "手动录入"), 
+    AUTO("auto", "Webhook自动触发"),
+    MANUAL("manual", "手动触发"),
+    SCHEDULED("scheduled", "定时触发"),
     HYBRID("hybrid", "混合修改");
 
     @Schema(description = """

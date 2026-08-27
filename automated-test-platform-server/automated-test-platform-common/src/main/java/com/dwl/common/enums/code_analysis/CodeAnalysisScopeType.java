@@ -9,7 +9,7 @@ import lombok.Getter;
  * <p>
  * Affected Scope Type Enumeration
  * <p>
- * 用于表示代码变更影响到的系统范围类型。
+ * 用于表示代码变更影响到的系统范围类型
  * <p>
  * Used to represent the system scope type affected by code changes.
  *

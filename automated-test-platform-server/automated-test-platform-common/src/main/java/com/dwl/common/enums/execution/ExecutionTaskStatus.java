@@ -24,7 +24,7 @@ import lombok.Getter;
         任务状态枚举
         Task Status Enumeration
         """)
-public enum TaskStatus {
+public enum ExecutionTaskStatus {
 
     PENDING("pending", "待执行"), 
     RUNNING("running", "执行中"), 

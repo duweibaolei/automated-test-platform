@@ -8,7 +8,7 @@ import lombok.Getter;
  * 工具调用状态枚举
  * Tool Call Status Enumeration
  * <p>
- * 用于表示 Agent 工具调用的执行状态。
+ * 用于表示 Agent 工具调用的执行状态
  * <p>
  * Used to represent the execution status of an Agent tool call.
  *

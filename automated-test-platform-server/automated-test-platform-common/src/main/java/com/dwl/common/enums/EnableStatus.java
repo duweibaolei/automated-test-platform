@@ -11,9 +11,9 @@ import java.util.Optional;
  * <p>
  * Enable Status Enumeration
  * <p>
- * 用于表示实体是否启用/激活的状态。
+ * 用于表示实体是否启用/激活的状态
  * <p>
- * 数据库存储为整数：1-启用，0-禁用。
+ * 数据库存储为整数：1-启用, 0-禁用
  * <p>
  * Used to represent whether an entity is enabled or activated.
  * <p>
