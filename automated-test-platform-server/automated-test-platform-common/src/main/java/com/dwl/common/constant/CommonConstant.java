@@ -27,6 +27,12 @@ public final class CommonConstant {
                 """);
     }
 
+    /**
+     * 默认版本号
+     * Default version number (for optimistic locking)
+     */
+    public static final int DEFAULT_VERSION = 1;
+
     /* ==================== 分页默认值 ====================
      * ==================== Pagination Defaults ====================
      * */
