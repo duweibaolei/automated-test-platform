@@ -1,0 +1,323 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Automated Test Platform API",
+    "description": "双模式驱动的Web自动化测试平台 API 文档",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "开发环境"
+    }
+  ],
+  "security": [
+    {}
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": [
+          "健康检查"
+        ],
+        "operationId": "health",
+        "summary": "服务健康检查",
+        "description": "检查服务是否正常运行",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "健康检查响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RHealthVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "认证管理"
+        ],
+        "operationId": "login",
+        "summary": "用户登录",
+        "description": "用户名密码登录，返回JWT令牌",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RLoginVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": [
+          "认证管理"
+        ],
+        "operationId": "refreshToken",
+        "summary": "刷新Token",
+        "description": "使用旧Token获取新Token",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Bearer Token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "刷新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": [
+          "认证管理"
+        ],
+        "operationId": "logout",
+        "summary": "退出登录",
+        "description": "退出登录，清除服务端会话",
+        "responses": {
+          "200": {
+            "description": "退出成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Bearer JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "请输入JWT令牌"
+      }
+    },
+    "schemas": {
+      "LoginDTO": {
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "description": "登录请求",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "用户名",
+            "example": "admin"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": "123456"
+          }
+        }
+      },
+      "LoginVO": {
+        "type": "object",
+        "required": [
+          "token",
+          "tokenType",
+          "expiresIn",
+          "userId",
+          "username",
+          "nickname"
+        ],
+        "description": "登录响应",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "访问令牌",
+            "example": "eyJhbGciOiJIUzI1NiJ9..."
+          },
+          "tokenType": {
+            "type": "string",
+            "description": "令牌类型",
+            "example": "Bearer"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "format": "int64",
+            "description": "过期时间(秒)",
+            "example": 86400
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户ID",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名",
+            "example": "admin"
+          },
+          "nickname": {
+            "type": "string",
+            "description": "昵称",
+            "example": "管理员"
+          }
+        }
+      },
+      "HealthVO": {
+        "type": "object",
+        "required": [
+          "status",
+          "service",
+          "version"
+        ],
+        "description": "健康检查响应",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "服务状态",
+            "example": "UP"
+          },
+          "service": {
+            "type": "string",
+            "description": "服务名称",
+            "example": "delta-test-server"
+          },
+          "version": {
+            "type": "string",
+            "description": "版本号",
+            "example": "1.0.0-SNAPSHOT"
+          }
+        }
+      },
+      "RVoid": {
+        "type": "object",
+        "description": "统一响应体",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "响应状态码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "操作成功"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "响应时间戳"
+          }
+        }
+      },
+      "RString": {
+        "type": "object",
+        "description": "统一响应体(String)",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "操作成功"
+          },
+          "data": {
+            "type": "string",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "RLoginVO": {
+        "type": "object",
+        "description": "统一响应体(LoginVO)",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "操作成功"
+          },
+          "data": {
+            "$ref": "#/components/schemas/LoginVO"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "RHealthVO": {
+        "type": "object",
+        "description": "统一响应体(HealthVO)",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "操作成功"
+          },
+          "data": {
+            "$ref": "#/components/schemas/HealthVO"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    }
+  }
+}

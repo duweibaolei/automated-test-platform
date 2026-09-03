@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+         automated-test-platform-admin 应用启动模块
+         包含: Spring Boot启动类 配置文件
+         Contains: Spring Boot main class, configuration files
+    -->
+
+    <parent>
+        <groupId>com.dwl</groupId>
+        <artifactId>automated-test-platform-server</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>automated-test-platform-admin</artifactId>
+    <packaging>jar</packaging>
+    <name>Automated Test Platform Admin</name>
+    <description>应用启动模块 - Spring Boot启动类 配置文件</description>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+        <!--
+            内部模块
+            Internal Modules
+        -->
+        <dependency>
+            <groupId>com.dwl</groupId>
+            <artifactId>automated-test-platform-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dwl</groupId>
+            <artifactId>automated-test-platform-mq</artifactId>
+        </dependency>
+
+        <!--
+            Spring Boot Actuator
+            监控端点
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!--
+            Logstash Logback Encoder
+            JSON结构化日志编码器
+        -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+        </dependency>
+
+        <!--
+            MySQL驱动
+            MySQL Driver
+        -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+
+        <!--
+            Spring Data Redis
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+
+    </dependencies>
+
+</project>

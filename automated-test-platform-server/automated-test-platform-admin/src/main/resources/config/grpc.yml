@@ -1,0 +1,8 @@
+grpc:
+  client:
+    engine:
+      host: ${GRPC_ENGINE_HOST:localhost}
+      port: ${GRPC_ENGINE_PORT:9090}
+      use-tls: ${GRPC_USE_TLS:false}
+      # 生产环境可能需要配置 trust-cert-path
+      # trust-cert-path: ${GRPC_TRUST_CERT_PATH:}

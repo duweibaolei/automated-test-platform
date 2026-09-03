@@ -80,9 +80,50 @@ public abstract class AggregateRoot<ID extends Serializable> extends Entity<ID> 
     }
 
     /* ================================================================
-     * 判断与清空
-     * Check and Clear
+     * 取出与清空
+     * Pull and Clear
      * ================================================================ */
+
+    /**
+     * 取出所有领域事件并清空(消费)
+     * <p>
+     * Pull all domain events and clear them (consume)
+     * <p>
+     * 适用于: 应用层保存聚合根后, 一次性取走事件并发布, 避免重复发布
+     * <p>
+     * Suitable for: application layer pulls events once after saving the
+     * aggregate root and publishes them, avoiding duplicate publishing
+     *
+     * @return Unmodifiable list of all domain events
+     */
+    public List<DomainEvent> pullDomainEvents() {
+        List<DomainEvent> events = List.copyOf(this.domainEvents);
+        this.domainEvents.clear();
+        return events;
+    }
+
+    /**
+     * 按类型取出领域事件并清空(消费)
+     * <p>
+     * Pull domain events of the specified type and clear them (consume)
+     * <p>
+     * 适用于: 应用层只关心某一类事件(如创建用户时的 UserCreatedEvent)时,
+     * 只取走指定类型, 避免误发布同聚合根上的其它事件
+     * <p>
+     * Suitable for: application layer only cares about a specific event type
+     * (e.g. UserCreatedEvent when creating a user); pulls only the specified
+     * type to avoid accidentally publishing other events of the same aggregate
+     *
+     * @param eventType 事件类型 event type
+     * @return Unmodifiable list of domain events of the specified type
+     */
+    public List<DomainEvent> pullDomainEvents(Class<? extends DomainEvent> eventType) {
+        List<DomainEvent> events = this.domainEvents.stream()
+                .filter(eventType::isInstance)
+                .toList();
+        this.domainEvents.removeIf(eventType::isInstance);
+        return events;
+    }
 
     /**
      * 清空所有领域事件

@@ -1,0 +1,23 @@
+# 只覆盖与生产环境不同的配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB:deltatest}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root}
+  data:
+    redis:
+      host: localhost
+      password:
+  rabbitmq:
+    host: localhost
+    username: guest
+    password: guest
+grpc:
+  client:
+    engine:
+      host: localhost
+      use-tls: false
+ai:
+  service:
+    url: http://localhost:8000
