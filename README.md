@@ -42,7 +42,7 @@
 
 - **`Vue`**: 专职页面展示即可
 
-  ![项目大纲.drawio](F:\work-space\idea\BeingDeveloped\automated-test-platform\project-documentation\picture\项目大纲.drawio.png)
+  ![项目大纲.drawio](project-documentation/picture/项目大纲.png)
 
 ---
 
@@ -61,7 +61,7 @@
 
 
 
-![数据库表全景大纲.drawio](F:\work-space\idea\BeingDeveloped\automated-test-platform\project-documentation\picture\数据库表全景大纲.drawio.png)
+![数据库表全景大纲.drawio](project-documentation/picture/数据库表全景大纲.png)
 
 ### 详细模块设计
 
@@ -192,7 +192,7 @@
 
 
 
-![Java 业务中台 · 内部架构.drawio](F:\work-space\idea\BeingDeveloped\automated-test-platform\project-documentation\picture\Java 业务中台 · 内部架构.drawio.png)
+![Java 业务中台 · 内部架构.drawio](project-documentation/picture/Java业务中台内部架构.png)
 
 ### 整体架构: 9 模块分层
 
@@ -506,7 +506,7 @@ public class UserDomainEventListener {
 
 ## 前端相关业务构思与设计
 
-![Vue 前端 · 内部架构.drawio](F:\work-space\idea\BeingDeveloped\automated-test-platform\project-documentation\picture\Vue 前端 · 内部架构.drawio.png)
+![Vue 前端内部架构.drawio](project-documentation/picture/Vue前端内部架构.png)
 
 
 
@@ -514,7 +514,7 @@ public class UserDomainEventListener {
 
 ## **AI 相关业务构思与设计**
 
-![Python AI 服务 · 内部架构.drawio](F:\work-space\idea\BeingDeveloped\automated-test-platform\project-documentation\picture\Python AI 服务 · 内部架构.drawio.png)
+![PythonAI 服务内部架构.drawio](project-documentation/picture/PythonAI服务内部架构.png)
 
 
 
@@ -522,7 +522,7 @@ public class UserDomainEventListener {
 
 ## 计算引擎相关业务构思与设计
 
-![C 代码计算引擎.drawio](F:\work-space\idea\BeingDeveloped\automated-test-platform\project-documentation\picture\C 代码计算引擎.drawio.png)
+![C 代码计算引擎.drawio](project-documentation/picture/C代码计算引擎.png)
 
 ---
 
