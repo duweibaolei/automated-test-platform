@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Test Platform - 代码变更分析</title>
+    <style>
+        :root {
+            --primary: #1668dc;
+            --primary-light: #eef4fb;
+            --primary-hover: #2b7de9;
+            --success: #16a34a;
+            --warning: #d97706;
+            --error: #dc2626;
+            --text-primary: #0d1117;
+            --text-secondary: #57606a;
+            --text-muted: #8b949e;
+            --border: #ebecef;
+            --bg-page: #f6f8fa;
+            --bg-card: #fff;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+        }
+
+        .sidebar {
+            position: fixed; left: 0; top: 0; bottom: 0;
+            width: 220px; background: #001529; color: #fff;
+            z-index: 100; display: flex; flex-direction: column;
+        }
+
+        .sidebar-logo {
+            height: 64px; display: flex; align-items: center;
+            justify-content: center; border-bottom: 1px solid rgba(255,255,255,.1);
+        }
+
+        .sidebar-logo h1 { font-size: 18px; font-weight: 600; letter-spacing: 1px; }
+        .sidebar-logo span { color: var(--primary); }
+
+        .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+
+        .nav-section {
+            padding: 16px 24px 8px; font-size: 12px;
+            color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 24px; cursor: pointer; transition: all .2s;
+            color: rgba(255,255,255,.65); text-decoration: none; font-size: 14px;
+        }
+
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,.08); }
+        .nav-item.active { color: #fff; background: rgba(22,104,220,.16); box-shadow: inset 3px 0 0 var(--primary); }
+        .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+        .nav-badge {
+            margin-left: auto; background: var(--error); color: #fff;
+            font-size: 11px; padding: 1px 6px; border-radius: 10px;
+            min-width: 18px; text-align: center;
+        }
+
+        .main { margin-left: 220px; min-height: 100vh; }
+
+        .header {
+            height: 64px; background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 32px;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-breadcrumb { color: var(--text-secondary); font-size: 14px; }
+        .header-breadcrumb a { color: var(--primary); text-decoration: none; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .avatar {
+            width: 32px; height: 32px; border-radius: 50%; background: var(--primary);
+            color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px;
+        }
+
+        .content { padding: 24px 32px; }
+
+        /* 顶部操作栏 */
+        .toolbar {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+        }
+        .toolbar-left { display: flex; align-items: center; gap: 12px; }
+        .toolbar-right { display: flex; align-items: center; gap: 12px; }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer;
+            border: 1px solid var(--border); background: var(--bg-card);
+            color: var(--text-primary); transition: all .2s;
+        }
+        .btn:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); color: #fff; }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        .btn-danger { color: var(--error); border-color: var(--error); }
+        .btn-success { color: var(--success); border-color: var(--success); }
+
+        .search-input {
+            padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 14px; width: 240px; outline: none;
+        }
+        .search-input:focus { border-color: var(--primary); }
+
+        .tab-group {
+            display: flex; border: 1px solid var(--border);
+            border-radius: 6px; overflow: hidden;
+        }
+        .tab-item {
+            padding: 8px 16px; font-size: 14px; cursor: pointer;
+            background: var(--bg-card); border: none; color: var(--text-secondary); transition: all .2s;
+        }
+        .tab-item.active { background: var(--primary); color: #fff; }
+        .tab-item:hover:not(.active) { color: var(--primary); }
+
+        /* 页内 Tab */
+        .page-tabs {
+            display: flex; border-bottom: 1px solid var(--border);
+            margin-bottom: 20px; background: var(--bg-card);
+            border-radius: var(--radius); box-shadow: var(--shadow);
+        }
+        .page-tab {
+            padding: 14px 24px; font-size: 14px; cursor: pointer;
+            border-bottom: 2px solid transparent; color: var(--text-secondary);
+            transition: all .2s; display: flex; align-items: center; gap: 8px;
+            background: none; border-top: none; border-left: none; border-right: none;
+        }
+        .page-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
+        .page-tab:hover:not(.active) { color: var(--primary); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* 统计行 */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 16px; margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--bg-card); border-radius: var(--radius);
+            padding: 16px 20px; box-shadow: var(--shadow);
+        }
+        .stat-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+        .stat-value { font-size: 24px; font-weight: 600; }
+        .stat-arrow {
+            display: inline-block; margin-left: 8px; font-size: 12px;
+            padding: 1px 6px; border-radius: 4px;
+        }
+        .arrow-up { background: #fff2f0; color: var(--error); }
+        .arrow-down { background: #f6ffed; color: var(--success); }
+
+        /* 卡片 */
+        .card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); }
+        .card-header {
+            padding: 16px 20px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .card-header h3 { font-size: 15px; font-weight: 600; }
+        .card-body { padding: 0; }
+
+        /* 主内容两栏 */
+        .layout {
+            display: grid; grid-template-columns: 1fr 380px; gap: 20px;
+        }
+
+        /* 提交列表 */
+        .commit-item {
+            padding: 16px 20px; border-bottom: 1px solid var(--border);
+            cursor: pointer; transition: background .15s;
+        }
+        .commit-item:hover { background: #fafafa; }
+        .commit-item.selected { background: var(--primary-light); border-left: 3px solid var(--primary); }
+        .commit-item:last-child { border-bottom: none; }
+
+        .commit-row {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 6px;
+        }
+        .commit-hash {
+            font-family: 'SF Mono', Consolas, monospace; font-size: 13px;
+            color: var(--primary); background: var(--primary-light);
+            padding: 1px 8px; border-radius: 4px;
+        }
+        .commit-msg { font-size: 14px; font-weight: 500; flex: 1; }
+        .risk-badge {
+            font-size: 12px; padding: 2px 8px; border-radius: 4px; font-weight: 500;
+        }
+        .risk-high { background: #fff2f0; color: var(--error); }
+        .risk-medium { background: #fff7e6; color: var(--warning); }
+        .risk-low { background: #f6ffed; color: var(--success); }
+
+        .commit-meta {
+            font-size: 12px; color: var(--text-muted); display: flex; gap: 16px;
+        }
+        .commit-meta span { display: inline-flex; align-items: center; gap: 4px; }
+
+        /* 右侧详情面板 */
+        .detail-panel .card { margin-bottom: 16px; }
+        .detail-section { padding: 16px 20px; }
+        .detail-section + .detail-section { border-top: 1px solid var(--border); }
+        .detail-label {
+            font-size: 12px; color: var(--text-muted); margin-bottom: 6px;
+            text-transform: uppercase; letter-spacing: .5px;
+        }
+        .detail-value { font-size: 14px; line-height: 1.6; }
+
+        .scope-list { list-style: none; }
+        .scope-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 0; font-size: 13px;
+        }
+        .scope-icon { width: 20px; text-align: center; font-size: 14px; }
+        .scope-type {
+            font-size: 11px; padding: 1px 6px; border-radius: 3px;
+            background: var(--primary-light); color: var(--primary); margin-left: auto;
+        }
+
+        .ai-summary {
+            background: #f6f8fa; border-radius: 6px; padding: 12px 16px;
+            font-size: 13px; line-height: 1.8; color: var(--text-secondary);
+        }
+        .ai-summary strong { color: var(--text-primary); }
+
+        /* 通用表格 */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            padding: 12px 16px; font-size: 13px; color: var(--text-secondary);
+            font-weight: 500; text-align: left;
+            background: #fafafa; border-bottom: 1px solid var(--border);
+        }
+        .data-table td {
+            padding: 12px 16px; font-size: 14px;
+            border-bottom: 1px solid var(--border); vertical-align: middle;
+        }
+        .data-table tr:hover td { background: #fafafa; }
+        .mono-id {
+            font-family: 'SF Mono', Consolas, monospace;
+            color: var(--primary); font-size: 13px;
+        }
+
+        /* 影响类型标签 */
+        .impact-tag {
+            font-size: 12px; padding: 2px 10px; border-radius: 4px;
+            font-weight: 500; display: inline-block;
+        }
+        .impact-impacted { background: #fff7e6; color: var(--warning); }
+        .impact-need_update { background: #fff2f0; color: var(--error); }
+        .impact-need_new { background: #e6f4ff; color: var(--primary); }
+
+        .resolve-tag {
+            font-size: 12px; padding: 2px 10px; border-radius: 4px;
+            font-weight: 500; display: inline-block;
+        }
+        .resolve-done { background: #f6ffed; color: var(--success); }
+        .resolve-pending { background: #fffbe6; color: #d48806; }
+
+        /* 分页 */
+        .pagination {
+            display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;
+        }
+        .pagination-info { font-size: 13px; color: var(--text-muted); }
+        .pagination-btns { display: flex; gap: 4px; }
+        .page-btn {
+            width: 32px; height: 32px; border: 1px solid var(--border);
+            border-radius: 6px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 13px; background: var(--bg-card);
+        }
+        .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        /* 风险卡片网格 */
+        .risk-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+        }
+        .risk-card {
+            background: var(--bg-card); border-radius: var(--radius);
+            padding: 16px 20px; box-shadow: var(--shadow);
+            border-left: 4px solid var(--border);
+        }
+        .risk-card.risk-h { border-left-color: var(--error); }
+        .risk-card.risk-m { border-left-color: var(--warning); }
+        .risk-card.risk-l { border-left-color: var(--success); }
+        .risk-card-top {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+        }
+        .risk-bar {
+            height: 6px; background: #f0f0f0; border-radius: 3px; overflow: hidden; margin-bottom: 8px;
+        }
+        .risk-bar-fill {
+            height: 100%; border-radius: 3px;
+        }
+        .risk-breakdown {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+            padding-top: 10px; border-top: 1px dashed var(--border);
+        }
+        .risk-breakdown-item { text-align: center; font-size: 12px; }
+        .risk-breakdown-item .num { font-size: 18px; font-weight: 600; }
+        .risk-breakdown-item .lbl { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+
+        /* 筛选 pill */
+        .filter-pills {
+            display: inline-flex; gap: 4px; background: #f5f5f5; padding: 3px; border-radius: 6px;
+        }
+        .pill {
+            padding: 5px 12px; font-size: 12px; border-radius: 4px;
+            cursor: pointer; color: var(--text-secondary); transition: all .2s;
+        }
+        .pill.active { background: var(--bg-card); color: var(--primary); font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+
+        /* 对话框 */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: var(--bg-card); border-radius: 12px;
+            width: 560px; max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.2);
+        }
+        .modal-lg { width: 720px; }
+        .modal-header {
+            padding: 20px 24px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .modal-header h3 { font-size: 16px; font-weight: 600; }
+        .modal-close {
+            background: none; border: none; font-size: 20px; cursor: pointer;
+            color: var(--text-muted); padding: 4px;
+        }
+        .modal-body { padding: 24px; }
+        .form-group { margin-bottom: 20px; }
+        .form-label {
+            display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px;
+        }
+        .form-label .required { color: var(--error); margin-left: 2px; }
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: 8px 12px; border: 1px solid var(--border);
+            border-radius: 6px; font-size: 14px; color: var(--text-primary);
+            outline: none; transition: border-color .2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(22,119,255,0.1);
+        }
+        .form-textarea { min-height: 80px; resize: vertical; }
+        .form-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .modal-footer {
+            padding: 16px 24px; border-top: 1px solid var(--border);
+            display: flex; justify-content: flex-end; gap: 12px;
+        }
+
+        .scope-check {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 0; font-size: 13px; cursor: pointer;
+        }
+        .scope-check input[type="checkbox"] { accent-color: var(--primary); }
+
+        .cron-badge {
+            font-family: 'SF Mono', Consolas, monospace; font-size: 12px;
+            background: #f5f5f5; padding: 3px 8px; border-radius: 4px; color: var(--text-secondary);
+        }
+
+        .checkbox-group {
+            display: flex; flex-wrap: wrap; gap: 8px 16px;
+        }
+        .checkbox-group label {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 13px; cursor: pointer;
+        }
+        .checkbox-group input[type="checkbox"] { accent-color: var(--primary); }
+
+        .flow-hint {
+            font-size: 12px; color: var(--text-muted);
+            background: #f6f8fa; border-radius: 6px; padding: 10px 14px;
+            border-left: 3px solid var(--primary);
+        }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-logo"><h1><span>Delta</span>Test</h1></div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">概览</div>
+        <a class="nav-item" href="index.html"><span class="icon">📊</span> 工作台</a>
+        <div class="nav-section">业务模块</div>
+        <a class="nav-item active" href="change-analysis.html"><span class="icon">🔍</span> 变更分析<span class="nav-badge">3</span></a>
+        <a class="nav-item" href="test-management.html"><span class="icon">🧪</span> 用例管理</a>
+        <a class="nav-item" href="task-center.html"><span class="icon">⚡</span> 任务中心<span class="nav-badge">1</span></a>
+        <a class="nav-item" href="report-center.html"><span class="icon">📋</span> 质量报告</a>
+        <div class="nav-section">系统</div>
+        <a class="nav-item" href="system-settings.html"><span class="icon">⚙️</span> 系统设置</a>
+    </nav>
+</aside>
+
+<main class="main">
+    <header class="header">
+        <div class="header-left">
+            <span class="header-breadcrumb"><a href="index.html">工作台</a> / 代码变更分析</span>
+        </div>
+        <div class="header-right">
+            <div class="avatar">A</div>
+        </div>
+    </header>
+
+    <div class="content">
+        <!-- 操作栏 -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="tab-group">
+                    <button class="tab-item active" data-filter="all">全部变更</button>
+                    <button class="tab-item" data-filter="auto">自动触发</button>
+                    <button class="tab-item" data-filter="manual">手动触发</button>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <button class="btn" onclick="document.getElementById('riskModal').classList.add('show')">⚙️
+                    调整风险等级
+                </button>
+                <button class="btn btn-success" onclick="document.getElementById('regressModal').classList.add('show')">⚡
+                    生成回归任务
+                </button>
+                <button class="btn-primary btn"
+                        onclick="document.getElementById('analysisModal').classList.add('show')">🔍 手动发起分析
+                </button>
+            </div>
+        </div>
+
+        <!-- 页内 Tab -->
+        <div class="page-tabs">
+            <button class="page-tab active" data-target="panel-commits">📋 变更文件</button>
+            <button class="page-tab" data-target="panel-risk">🎯 风险评估</button>
+            <button class="page-tab" data-target="panel-cases">🧪 受影响用例</button>
+        </div>
+
+        <!-- ============ Tab 1: 变更文件 ============ -->
+        <div class="tab-panel active" id="panel-commits">
+            <!-- 统计 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">今日新增提交</div>
+                    <div class="stat-value" style="color:var(--primary)">12<span class="stat-arrow arrow-up">↑3</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">高风险变更</div>
+                    <div class="stat-value" style="color:var(--error)">2<span class="stat-arrow arrow-down">↓1</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">影响用例数</div>
+                    <div class="stat-value" style="color:var(--warning)">34<span class="stat-arrow arrow-up">↑8</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">已生成回归任务</div>
+                    <div class="stat-value" style="color:var(--success)">5<span class="stat-arrow arrow-up">↑2</span></div>
+                </div>
+            </div>
+
+            <!-- 主内容 -->
+            <div class="layout">
+                <!-- 左侧提交列表 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📋 提交记录</h3>
+                        <span id="commitCount" style="font-size:13px;color:var(--text-muted)">共 47 条</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="commit-item selected" data-key="a3f2d1e" data-trigger="auto">
+                            <div class="commit-row">
+                                <span class="commit-hash">a3f2d1e</span>
+                                <span class="commit-msg">feat: 用户认证模块重构，支持OAuth2.0</span>
+                                <span class="risk-badge risk-high">高风险</span>
+                            </div>
+                            <div class="commit-meta">
+                                <span>👤 Zhang Wei</span>
+                                <span>🌿 feature/user-auth</span>
+                                <span>📦 +820 -340</span>
+                                <span>🕐 10分钟前</span>
+                            </div>
+                        </div>
+                        <div class="commit-item" data-key="b7c4e9a" data-trigger="auto">
+                            <div class="commit-row">
+                                <span class="commit-hash">b7c4e9a</span>
+                                <span class="commit-msg">fix: 修复订单创建时库存扣减并发问题</span>
+                                <span class="risk-badge risk-high">高风险</span>
+                            </div>
+                            <div class="commit-meta">
+                                <span>👤 Li Ming</span>
+                                <span>🌿 fix/order-stock</span>
+                                <span>📦 +45 -12</span>
+                                <span>🕐 32分钟前</span>
+                            </div>
+                        </div>
+                        <div class="commit-item" data-key="c1d8f2b" data-trigger="auto">
+                            <div class="commit-row">
+                                <span class="commit-hash">c1d8f2b</span>
+                                <span class="commit-msg">refactor: 抽取公共组件 PageHeader</span>
+                                <span class="risk-badge risk-medium">中风险</span>
+                            </div>
+                            <div class="commit-meta">
+                                <span>👤 Wang Fang</span>
+                                <span>🌿 refactor/common-components</span>
+                                <span>📦 +180 -95</span>
+                                <span>🕐 1小时前</span>
+                            </div>
+                        </div>
+                        <div class="commit-item" data-key="d9e3a5c" data-trigger="manual">
+                            <div class="commit-row">
+                                <span class="commit-hash">d9e3a5c</span>
+                                <span class="commit-msg">style: 调整首页卡片间距与字体大小</span>
+                                <span class="risk-badge risk-low">低风险</span>
+                            </div>
+                            <div class="commit-meta">
+                                <span>👤 Chen Yu</span>
+                                <span>🌿 feature/home-ui</span>
+                                <span>📦 +28 -16</span>
+                                <span>🕐 2小时前</span>
+                            </div>
+                        </div>
+                        <div class="commit-item" data-key="e2f7b6d" data-trigger="manual">
+                            <div class="commit-row">
+                                <span class="commit-hash">e2f7b6d</span>
+                                <span class="commit-msg">feat: 新增商品搜索接口，支持模糊匹配</span>
+                                <span class="risk-badge risk-medium">中风险</span>
+                            </div>
+                            <div class="commit-meta">
+                                <span>👤 Zhao Lei</span>
+                                <span>🌿 feature/search-api</span>
+                                <span>📦 +156 -8</span>
+                                <span>🕐 3小时前</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pagination">
+                        <span class="pagination-info">共 47 条 · 第 1/10 页</span>
+                        <div class="pagination-btns">
+                            <div class="page-btn">«</div>
+                            <div class="page-btn active">1</div>
+                            <div class="page-btn">2</div>
+                            <div class="page-btn">3</div>
+                            <div class="page-btn">»</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧详情 -->
+                <div class="detail-panel">
+                    <!-- 变更详情 -->
+                    <div class="card">
+                        <div class="card-header"><h3>🔎 变更详情 — ANA-0028</h3></div>
+                        <div class="detail-section">
+                            <div class="detail-label">提交信息</div>
+                            <div class="detail-value" id="detailMsg"><strong>feat: 用户认证模块重构，支持OAuth2.0</strong></div>
+                            <div id="detailMeta" style="font-size:12px;color:var(--text-muted);margin-top:4px">a3f2d1e · feature/user-auth ·
+                                Zhang Wei
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">变更规模</div>
+                            <div class="detail-value" id="detailScale">+820 行 / -340 行 · 涉及 12 个文件</div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">风险等级 <span
+                                    style="font-size:11px;color:var(--primary);cursor:pointer" onclick="document.getElementById('riskModal').classList.add('show')">[手动调整]</span></div>
+                            <div class="detail-value" id="detailRisk"><span class="risk-badge risk-high"
+                                                            style="font-size:14px;padding:4px 12px">高风险</span></div>
+                        </div>
+                    </div>
+
+                    <!-- 影响范围 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>🌐 影响范围</h3>
+                            <label class="scope-check" style="margin:0"><input type="checkbox" checked>
+                                全选生成回归范围</label>
+                        </div>
+                        <div class="detail-section" style="padding:12px 20px">
+                            <ul class="scope-list" id="detailScope">
+                                <li class="scope-item">
+                                    <span class="scope-icon">🖥️</span> LoginPage.vue, AuthCallback.vue
+                                    <span class="scope-type">前端页面</span>
+                                </li>
+                                <li class="scope-item">
+                                    <span class="scope-icon">📦</span> AuthService, TokenManager
+                                    <span class="scope-type">后端服务</span>
+                                </li>
+                                <li class="scope-item">
+                                    <span class="scope-icon">🔌</span> /api/auth/login, /api/auth/callback
+                                    <span class="scope-type">后端接口</span>
+                                </li>
+                                <li class="scope-item">
+                                    <span class="scope-icon">🗄️</span> user_auth_config, oauth_tokens
+                                    <span class="scope-type">数据库表</span>
+                                </li>
+                                <li class="scope-item">
+                                    <span class="scope-icon">🧩</span> OAuthButton, PermissionGuard
+                                    <span class="scope-type">前端组件</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- AI 分析 -->
+                    <div class="card">
+                        <div class="card-header"><h3>🤖 AI 分析摘要</h3></div>
+                        <div class="detail-section">
+                            <div class="ai-summary" id="detailAi">
+                                <strong>变更概述：</strong>用户认证模块从 Session 迁移到 OAuth2.0，涉及登录流程、Token管理、权限校验的核心路径重构。<br><br>
+                                <strong>测试建议：</strong>重点验证①登录/OAuth回调流程 ②Token刷新与过期 ③权限拦截器 ④并发登录场景<br><br>
+                                <strong>受影响用例：</strong>已匹配 <strong>18</strong> 条测试用例，其中 5 条需更新断言，3 条需新增
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 手动补充 -->
+                    <div class="card">
+                        <div class="card-header"><h3>📝 手动补充</h3></div>
+                        <div class="detail-section">
+                            <div class="detail-label">变更说明补充</div>
+                            <textarea class="form-textarea"
+                                      placeholder="录入补充变更说明、业务背景，辅助AI分析与测试人员理解..."
+                                      style="margin-bottom:12px"></textarea>
+                            <button class="btn-primary btn" style="width:100%">💾 保存补充信息</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Tab 2: 风险评估 ============ -->
+        <div class="tab-panel" id="panel-risk">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">分析总数</div>
+                    <div class="stat-value" style="color:var(--primary)">47</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">高风险占比</div>
+                    <div class="stat-value" style="color:var(--error)">14.9%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">平均变更行</div>
+                    <div class="stat-value" style="color:var(--warning)">398</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">平均处理率</div>
+                    <div class="stat-value" style="color:var(--success)">76.4%</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>🎯 变更风险明细（按提交汇总）</h3>
+                    <span style="font-size:13px;color:var(--text-muted)">近 7 日共 15 次分析</span>
+                </div>
+                <div class="card-body">
+                    <div style="padding:20px">
+                        <div class="risk-grid">
+                            <!-- 高风险 -->
+                            <div class="risk-card risk-h">
+                                <div class="risk-card-top">
+                                    <div>
+                                        <span class="commit-hash">a3f2d1e</span>
+                                        <span style="font-weight:500;margin-left:8px">认证模块 OAuth2.0 重构</span>
+                                    </div>
+                                    <span class="risk-badge risk-high">高风险</span>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+                                    Zhang Wei · 10分钟前 · +820/-340 行 · 12 文件
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-bar-fill" style="width:86%;background:var(--error)"></div>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-secondary);text-align:right">风险评分 86/100</div>
+                                <div class="risk-breakdown">
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--warning)">10</div>
+                                        <div class="lbl">受影响用例</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--error)">5</div>
+                                        <div class="lbl">需更新</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--primary)">3</div>
+                                        <div class="lbl">需新增</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="risk-card risk-h">
+                                <div class="risk-card-top">
+                                    <div>
+                                        <span class="commit-hash">b7c4e9a</span>
+                                        <span style="font-weight:500;margin-left:8px">订单库存扣减并发修复</span>
+                                    </div>
+                                    <span class="risk-badge risk-high">高风险</span>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+                                    Li Ming · 32分钟前 · +45/-12 行 · 6 文件
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-bar-fill" style="width:82%;background:var(--error)"></div>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-secondary);text-align:right">风险评分 82/100</div>
+                                <div class="risk-breakdown">
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--warning)">3</div>
+                                        <div class="lbl">受影响用例</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--error)">2</div>
+                                        <div class="lbl">需更新</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--primary)">1</div>
+                                        <div class="lbl">需新增</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 中风险 -->
+                            <div class="risk-card risk-m">
+                                <div class="risk-card-top">
+                                    <div>
+                                        <span class="commit-hash">c1d8f2b</span>
+                                        <span style="font-weight:500;margin-left:8px">抽取公共组件 PageHeader</span>
+                                    </div>
+                                    <span class="risk-badge risk-medium">中风险</span>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+                                    Wang Fang · 1小时前 · +180/-95 行 · 9 文件
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-bar-fill" style="width:54%;background:var(--warning)"></div>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-secondary);text-align:right">风险评分 54/100</div>
+                                <div class="risk-breakdown">
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--warning)">2</div>
+                                        <div class="lbl">受影响用例</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--error)">0</div>
+                                        <div class="lbl">需更新</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--primary)">1</div>
+                                        <div class="lbl">需新增</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="risk-card risk-m">
+                                <div class="risk-card-top">
+                                    <div>
+                                        <span class="commit-hash">e2f7b6d</span>
+                                        <span style="font-weight:500;margin-left:8px">商品搜索接口模糊匹配</span>
+                                    </div>
+                                    <span class="risk-badge risk-medium">中风险</span>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+                                    Zhao Lei · 3小时前 · +156/-8 行 · 7 文件
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-bar-fill" style="width:61%;background:var(--warning)"></div>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-secondary);text-align:right">风险评分 61/100</div>
+                                <div class="risk-breakdown">
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--warning)">5</div>
+                                        <div class="lbl">受影响用例</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--error)">2</div>
+                                        <div class="lbl">需更新</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--primary)">2</div>
+                                        <div class="lbl">需新增</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 低风险 -->
+                            <div class="risk-card risk-l">
+                                <div class="risk-card-top">
+                                    <div>
+                                        <span class="commit-hash">d9e3a5c</span>
+                                        <span style="font-weight:500;margin-left:8px">首页卡片样式调整</span>
+                                    </div>
+                                    <span class="risk-badge risk-low">低风险</span>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+                                    Chen Yu · 2小时前 · +28/-16 行 · 4 文件
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-bar-fill" style="width:22%;background:var(--success)"></div>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-secondary);text-align:right">风险评分 22/100</div>
+                                <div class="risk-breakdown">
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--warning)">1</div>
+                                        <div class="lbl">受影响用例</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--error)">0</div>
+                                        <div class="lbl">需更新</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--primary)">0</div>
+                                        <div class="lbl">需新增</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="risk-card risk-l">
+                                <div class="risk-card-top">
+                                    <div>
+                                        <span class="commit-hash">f4a8c2e</span>
+                                        <span style="font-weight:500;margin-left:8px">日志格式统一优化</span>
+                                    </div>
+                                    <span class="risk-badge risk-low">低风险</span>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+                                    Wu Hao · 5小时前 · +64/-72 行 · 8 文件
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-bar-fill" style="width:18%;background:var(--success)"></div>
+                                </div>
+                                <div style="font-size:12px;color:var(--text-secondary);text-align:right">风险评分 18/100</div>
+                                <div class="risk-breakdown">
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--warning)">0</div>
+                                        <div class="lbl">受影响用例</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--error)">0</div>
+                                        <div class="lbl">需更新</div>
+                                    </div>
+                                    <div class="risk-breakdown-item">
+                                        <div class="num" style="color:var(--primary)">0</div>
+                                        <div class="lbl">需新增</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pagination">
+                        <span class="pagination-info">共 15 条 · 第 1/3 页</span>
+                        <div class="pagination-btns">
+                            <div class="page-btn">«</div>
+                            <div class="page-btn active">1</div>
+                            <div class="page-btn">2</div>
+                            <div class="page-btn">3</div>
+                            <div class="page-btn">»</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Tab 3: 受影响用例 ============ -->
+        <div class="tab-panel" id="panel-cases">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">关联分析任务</div>
+                    <div class="stat-value" style="color:var(--primary)">ANA-0028</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">受影响用例合计</div>
+                    <div class="stat-value" style="color:var(--warning)">18</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">待处理</div>
+                    <div class="stat-value" style="color:var(--error)">8</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">已处理</div>
+                    <div class="stat-value" style="color:var(--success)">10</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>🧪 受影响用例列表（case_analysis_relation）</h3>
+                    <div class="toolbar-right" style="gap:8px">
+                        <div class="filter-pills" id="impactFilter">
+                            <div class="pill active" data-filter="all">全部</div>
+                            <div class="pill" data-filter="impacted">受影响</div>
+                            <div class="pill" data-filter="need_update">需更新</div>
+                            <div class="pill" data-filter="need_new">需新增</div>
+                        </div>
+                        <input class="search-input" placeholder="🔍 搜索用例编号/名称...">
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th style="width:40px"><input type="checkbox"></th>
+                        <th>用例编号</th>
+                        <th>用例名称</th>
+                        <th>影响类型</th>
+                        <th>处理状态</th>
+                        <th>所属模块</th>
+                        <th>优先级</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="caseRelationBody">
+                    <tr data-impact="need_update">
+                        <td><input type="checkbox" checked></td>
+                        <td><span class="mono-id">TC-2001</span></td>
+                        <td>用户名密码登录流程验证</td>
+                        <td><span class="impact-tag impact-need_update">需更新断言</span></td>
+                        <td><span class="resolve-tag resolve-pending">待处理</span></td>
+                        <td>用户认证</td>
+                        <td><span class="risk-badge risk-high">P0</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="window.location.href='test-management.html'">✏️ 编辑用例</button>
+                        </td>
+                    </tr>
+                    <tr data-impact="need_update">
+                        <td><input type="checkbox" checked></td>
+                        <td><span class="mono-id">TC-2003</span></td>
+                        <td>登录失败次数超限锁定账户</td>
+                        <td><span class="impact-tag impact-need_update">需更新断言</span></td>
+                        <td><span class="resolve-tag resolve-pending">待处理</span></td>
+                        <td>用户认证</td>
+                        <td><span class="risk-badge risk-high">P0</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="window.location.href='test-management.html'">✏️ 编辑用例</button>
+                        </td>
+                    </tr>
+                    <tr data-impact="need_new">
+                        <td><input type="checkbox" checked></td>
+                        <td><span class="mono-id">TC-NEW-01</span></td>
+                        <td>OAuth2.0 第三方授权码回调流程</td>
+                        <td><span class="impact-tag impact-need_new">需新增用例</span></td>
+                        <td><span class="resolve-tag resolve-pending">待处理</span></td>
+                        <td>用户认证</td>
+                        <td><span class="risk-badge risk-high">P0</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="window.location.href='test-management.html'">➕ 新建用例</button>
+                        </td>
+                    </tr>
+                    <tr data-impact="impacted">
+                        <td><input type="checkbox" checked></td>
+                        <td><span class="mono-id">TC-2010</span></td>
+                        <td>已登录用户访问权限内页面</td>
+                        <td><span class="impact-tag impact-impacted">受影响</span></td>
+                        <td><span class="resolve-tag resolve-done">已处理</span></td>
+                        <td>权限控制</td>
+                        <td><span class="risk-badge risk-medium">P1</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="window.location.href='test-management.html'">👁️ 查看</button>
+                        </td>
+                    </tr>
+                    <tr data-impact="impacted">
+                        <td><input type="checkbox" checked></td>
+                        <td><span class="mono-id">TC-2011</span></td>
+                        <td>未登录用户跳转登录页</td>
+                        <td><span class="impact-tag impact-impacted">受影响</span></td>
+                        <td><span class="resolve-tag resolve-done">已处理</span></td>
+                        <td>权限控制</td>
+                        <td><span class="risk-badge risk-medium">P1</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="window.location.href='test-management.html'">👁️ 查看</button>
+                        </td>
+                    </tr>
+                    <tr data-impact="need_new">
+                        <td><input type="checkbox" checked></td>
+                        <td><span class="mono-id">TC-NEW-02</span></td>
+                        <td>Token 过期自动刷新机制</td>
+                        <td><span class="impact-tag impact-need_new">需新增用例</span></td>
+                        <td><span class="resolve-tag resolve-pending">待处理</span></td>
+                        <td>用户认证</td>
+                        <td><span class="risk-badge risk-medium">P1</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="window.location.href='test-management.html'">➕ 新建用例</button>
+                        </td>
+                    </tr>
+                    <tr data-impact="need_update">
+                        <td><input type="checkbox"></td>
+                        <td><span class="mono-id">TC-2015</span></td>
+                        <td>登出后清除会话状态</td>
+                        <td><span class="impact-tag impact-need_update">需更新断言</span></td>
+                        <td><span class="resolve-tag resolve-done">已处理</span></td>
+                        <td>用户认证</td>
+                        <td><span class="risk-badge risk-medium">P1</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="window.location.href='test-management.html'">👁️ 查看</button>
+                        </td>
+                    </tr>
+                    <tr data-impact="impacted">
+                        <td><input type="checkbox"></td>
+                        <td><span class="mono-id">TC-2022</span></td>
+                        <td>角色权限拦截菜单可见性</td>
+                        <td><span class="impact-tag impact-impacted">受影响</span></td>
+                        <td><span class="resolve-tag resolve-done">已处理</span></td>
+                        <td>权限控制</td>
+                        <td><span class="risk-badge risk-low">P2</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="window.location.href='test-management.html'">👁️ 查看</button>
+                        </td>
+                    </tr>
+                    <tr data-impact="need_new">
+                        <td><input type="checkbox"></td>
+                        <td><span class="mono-id">TC-NEW-03</span></td>
+                        <td>并发多端登录 Token 互踢</td>
+                        <td><span class="impact-tag impact-need_new">需新增用例</span></td>
+                        <td><span class="resolve-tag resolve-pending">待处理</span></td>
+                        <td>用户认证</td>
+                        <td><span class="risk-badge risk-medium">P1</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="window.location.href='test-management.html'">➕ 新建用例</button>
+                        </td>
+                    </tr>
+                    <tr data-impact="need_update">
+                        <td><input type="checkbox"></td>
+                        <td><span class="mono-id">TC-2030</span></td>
+                        <td>记住密码自动填充登录</td>
+                        <td><span class="impact-tag impact-need_update">需更新断言</span></td>
+                        <td><span class="resolve-tag resolve-done">已处理</span></td>
+                        <td>用户认证</td>
+                        <td><span class="risk-badge risk-low">P2</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="window.location.href='test-management.html'">👁️ 查看</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <span class="pagination-info">共 18 条 · 第 1/2 页 · 已选 6 条</span>
+                    <div style="display:flex;align-items:center;gap:12px">
+                        <button class="btn btn-sm">✓ 批量标记已处理</button>
+                        <div class="pagination-btns">
+                            <div class="page-btn">«</div>
+                            <div class="page-btn active">1</div>
+                            <div class="page-btn">2</div>
+                            <div class="page-btn">»</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- 手动发起分析对话框 -->
+<div class="modal-overlay" id="analysisModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>🔍 手动发起代码影响分析</h3>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('show')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Git 仓库<span class="required">*</span></label>
+                    <select class="form-select">
+                        <option>delta-test-platform</option>
+                        <option>delta-test-engine</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">分支<span class="required">*</span></label>
+                    <select class="form-select">
+                        <option>feature/user-auth</option>
+                        <option>fix/order-stock</option>
+                        <option>main</option>
+                        <option>develop</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">起始 Commit<span class="required">*</span></label>
+                    <input class="form-input" placeholder="输入或选择起始 commit hash">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">截止 Commit<span class="required">*</span></label>
+                    <input class="form-input" placeholder="输入或选择截止 commit hash">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">变更说明（选填）</label>
+                <textarea class="form-textarea" placeholder="手动录入变更说明、业务背景，辅助 AI 分析..."></textarea>
+                <div class="form-hint">补充的信息将帮助 AI 生成更精准的风险评估与测试建议</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').classList.remove('show')">取消</button>
+            <button class="btn btn-primary" onclick="this.closest('.modal-overlay').classList.remove('show')">🔍
+                发起分析
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 风险等级调整对话框 -->
+<div class="modal-overlay" id="riskModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>⚙️ 手动调整风险等级</h3>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('show')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">选择提交</label>
+                <select class="form-select">
+                    <option>a3f2d1e - feat: 用户认证模块重构</option>
+                    <option>b7c4e9a - fix: 修复订单库存扣减</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">AI 评定等级</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                    <span class="risk-badge risk-high" style="font-size:14px;padding:4px 12px">高风险</span>
+                    <span style="font-size:12px;color:var(--text-muted)">— AI 自动评定（参考值）</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">手动调整等级<span class="required">*</span></label>
+                <div style="display:flex;gap:12px">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="radio" name="risk" value="high" checked>
+                        <span class="risk-badge risk-high">高风险</span></label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="radio" name="risk" value="medium"> <span class="risk-badge risk-medium">中风险</span></label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="radio" name="risk" value="low"> <span class="risk-badge risk-low">低风险</span></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">调整原因</label>
+                <textarea class="form-textarea"
+                          placeholder="说明调整原因，如：该变更虽涉及认证核心路径，但已有完整的单元测试覆盖..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').classList.remove('show')">取消</button>
+            <button class="btn btn-primary" onclick="this.closest('.modal-overlay').classList.remove('show')">确认调整</button>
+        </div>
+    </div>
+</div>
+
+<!-- 生成回归任务对话框 -->
+<div class="modal-overlay" id="regressModal">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h3>⚡ 生成回归任务 — 关联 ANA-0028</h3>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('show')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="flow-hint" style="margin-bottom:20px">
+                提交后将创建 test_task，其中 <code>analysis_id = ANA-0028</code>，用例筛选结果作为任务绑定的用例集。
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">任务名称<span class="required">*</span></label>
+                <input class="form-input" value="[回归] OAuth2.0 认证模块重构 - ANA-0028">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">用例筛选器（case_analysis_relation.impact_type）</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" checked> 受影响 (impacted)</label>
+                        <label><input type="checkbox" checked> 需更新断言 (need_update)</label>
+                        <label><input type="checkbox" checked> 需新增 (need_new)</label>
+                    </div>
+                    <div class="form-hint">匹配共 <strong>18</strong> 条用例，其中已处理 10 条，待处理 8 条</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">执行环境<span class="required">*</span></label>
+                    <select class="form-select">
+                        <option>test — 测试环境 (http://test.deltatest.com)</option>
+                        <option>staging — 预发环境 (http://staging.deltatest.com)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">并发数</label>
+                    <input class="form-input" type="number" value="3">
+                    <div class="form-hint">建议 ≤ 执行节点 max_concurrent 之和</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">失败重试次数</label>
+                    <input class="form-input" type="number" value="2">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">绑定执行节点</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" checked> 🖥️ node-chrome-01 (192.168.1.21:5555)</label>
+                    <label><input type="checkbox" checked> 🖥️ node-firefox-01 (192.168.1.22:5555)</label>
+                    <label><input type="checkbox"> 🖥️ node-api-01 (192.168.1.23:5555 · API Only)</label>
+                    <label><input type="checkbox"> 📱 node-android-01 (192.168.1.31:5555)</label>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">失败告警</label>
+                    <select class="form-select">
+                        <option>邮件 + 企业微信</option>
+                        <option>仅邮件</option>
+                        <option>仅企业微信</option>
+                        <option>不告警</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">归属人</label>
+                    <select class="form-select">
+                        <option>tester (赵测试)</option>
+                        <option>dev.zhang (张伟)</option>
+                        <option>admin</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0">
+                <div style="display:flex;align-items:center;gap:8px">
+                    <span class="switch on"></span>
+                    <span style="font-size:13px;color:var(--text-secondary)">保存后<strong>立即执行</strong>（关闭则保存为待执行任务）</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').classList.remove('show')">取消</button>
+            <button class="btn btn-success" onclick="this.closest('.modal-overlay').classList.remove('show')">⚡
+                生成任务并立即执行
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 提交详情数据（原型演示用）
+    var COMMITS = {
+        a3f2d1e: {
+            msg: 'feat: 用户认证模块重构，支持OAuth2.0',
+            meta: 'a3f2d1e · feature/user-auth · Zhang Wei',
+            scale: '+820 行 / -340 行 · 涉及 12 个文件',
+            risk: 'high',
+            scope: [
+                {icon: '🖥️', text: 'LoginPage.vue, AuthCallback.vue', type: '前端页面'},
+                {icon: '📦', text: 'AuthService, TokenManager', type: '后端服务'},
+                {icon: '🔌', text: '/api/auth/login, /api/auth/callback', type: '后端接口'},
+                {icon: '🗄️', text: 'user_auth_config, oauth_tokens', type: '数据库表'},
+                {icon: '🧩', text: 'OAuthButton, PermissionGuard', type: '前端组件'}
+            ],
+            ai: '<strong>变更概述：</strong>用户认证模块从 Session 迁移到 OAuth2.0，涉及登录流程、Token管理、权限校验的核心路径重构。<br><br>' +
+                '<strong>测试建议：</strong>重点验证①登录/OAuth回调流程 ②Token刷新与过期 ③权限拦截器 ④并发登录场景<br><br>' +
+                '<strong>受影响用例：</strong>已匹配 <strong>18</strong> 条测试用例，其中 5 条需更新断言，3 条需新增'
+        },
+        b7c4e9a: {
+            msg: 'fix: 修复订单创建时库存扣减并发问题',
+            meta: 'b7c4e9a · fix/order-stock · Li Ming',
+            scale: '+45 行 / -12 行 · 涉及 6 个文件',
+            risk: 'high',
+            scope: [
+                {icon: '📦', text: 'OrderService, StockService', type: '后端服务'},
+                {icon: '🔌', text: 'POST /api/orders', type: '后端接口'},
+                {icon: '🗄️', text: 'order_items, product_stock', type: '数据库表'}
+            ],
+            ai: '<strong>变更概述：</strong>修复订单创建时库存扣减的并发问题，引入乐观锁与幂等控制。<br><br>' +
+                '<strong>测试建议：</strong>重点验证①高并发下单场景 ②库存扣减一致性 ③幂等重复提交<br><br>' +
+                '<strong>受影响用例：</strong>已匹配 <strong>6</strong> 条测试用例，其中 2 条需更新断言'
+        },
+        c1d8f2b: {
+            msg: 'refactor: 抽取公共组件 PageHeader',
+            meta: 'c1d8f2b · refactor/common-components · Wang Fang',
+            scale: '+180 行 / -95 行 · 涉及 9 个文件',
+            risk: 'medium',
+            scope: [
+                {icon: '🖥️', text: 'PageHeader.vue', type: '前端页面'},
+                {icon: '🧩', text: 'Breadcrumb, PageTitle', type: '前端组件'}
+            ],
+            ai: '<strong>变更概述：</strong>抽取公共 PageHeader 组件，统一页面头部展示逻辑。<br><br>' +
+                '<strong>测试建议：</strong>重点验证①页面头部渲染 ②面包屑导航跳转<br><br>' +
+                '<strong>受影响用例：</strong>已匹配 <strong>3</strong> 条测试用例，无断言更新'
+        },
+        d9e3a5c: {
+            msg: 'style: 调整首页卡片间距与字体大小',
+            meta: 'd9e3a5c · feature/home-ui · Chen Yu',
+            scale: '+28 行 / -16 行 · 涉及 4 个文件',
+            risk: 'low',
+            scope: [
+                {icon: '🖥️', text: 'HomePage.vue, StatCard.vue', type: '前端页面'}
+            ],
+            ai: '<strong>变更概述：</strong>纯样式调整，调整首页卡片间距与字体大小，无逻辑变更。<br><br>' +
+                '<strong>测试建议：</strong>低风险，仅需视觉回归验证<br><br>' +
+                '<strong>受影响用例：</strong>已匹配 <strong>1</strong> 条测试用例'
+        },
+        e2f7b6d: {
+            msg: 'feat: 新增商品搜索接口，支持模糊匹配',
+            meta: 'e2f7b6d · feature/search-api · Zhao Lei',
+            scale: '+156 行 / -8 行 · 涉及 7 个文件',
+            risk: 'medium',
+            scope: [
+                {icon: '📦', text: 'SearchService, ProductQuery', type: '后端服务'},
+                {icon: '🔌', text: 'GET /api/products/search', type: '后端接口'},
+                {icon: '🗄️', text: 'products, product_index', type: '数据库表'}
+            ],
+            ai: '<strong>变更概述：</strong>新增商品搜索接口，支持关键词模糊匹配与分页。<br><br>' +
+                '<strong>测试建议：</strong>重点验证①模糊匹配正确性 ②分页边界 ③特殊字符处理<br><br>' +
+                '<strong>受影响用例：</strong>已匹配 <strong>9</strong> 条测试用例，其中 2 条需新增断言'
+        }
+    };
+
+    // 页内 Tab 切换
+    document.querySelectorAll('.page-tabs').forEach(function (tabsEl) {
+        tabsEl.querySelectorAll('.page-tab').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var panelsContainer = tabsEl.parentElement;
+                tabsEl.querySelectorAll('.page-tab').forEach(function (t) { t.classList.remove('active'); });
+                panelsContainer.querySelectorAll(':scope > .tab-panel').forEach(function (p) { p.classList.remove('active'); });
+                tab.classList.add('active');
+                var target = document.getElementById(tab.dataset.target);
+                if (target) target.classList.add('active');
+            });
+        });
+    });
+
+    // 顶部 tab-group 过滤提交列表
+    var tabBtns = document.querySelectorAll('.tab-item');
+    tabBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            tabBtns.forEach(function (b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            var filter = btn.dataset.filter;
+            var items = document.querySelectorAll('.commit-item');
+            var visible = 0;
+            items.forEach(function (item) {
+                var match = filter === 'all' || item.dataset.trigger === filter;
+                item.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+            document.getElementById('commitCount').textContent = '共 ' + visible + ' 条';
+        });
+    });
+
+    // 提交项选中联动详情
+    var commitItems = document.querySelectorAll('.commit-item');
+    commitItems.forEach(function (item) {
+        item.addEventListener('click', function () {
+            commitItems.forEach(function (i) { i.classList.remove('selected'); });
+            item.classList.add('selected');
+            var c = COMMITS[item.dataset.key];
+            if (!c) return;
+            document.getElementById('detailMsg').innerHTML = '<strong>' + c.msg + '</strong>';
+            document.getElementById('detailMeta').textContent = c.meta;
+            document.getElementById('detailScale').textContent = c.scale;
+            var riskMap = {high: ['高风险', 'risk-high'], medium: ['中风险', 'risk-medium'], low: ['低风险', 'risk-low']};
+            var r = riskMap[c.risk];
+            document.getElementById('detailRisk').innerHTML = '<span class="risk-badge ' + r[1] + '" style="font-size:14px;padding:4px 12px">' + r[0] + '</span>';
+            var scopeHtml = '';
+            c.scope.forEach(function (s) {
+                scopeHtml += '<li class="scope-item"><span class="scope-icon">' + s.icon + '</span> ' + s.text + '<span class="scope-type">' + s.type + '</span></li>';
+            });
+            document.getElementById('detailScope').innerHTML = scopeHtml;
+            document.getElementById('detailAi').innerHTML = c.ai;
+        });
+    });
+
+    // 受影响用例 filter pills
+    var pills = document.querySelectorAll('#impactFilter .pill');
+    pills.forEach(function (pill) {
+        pill.addEventListener('click', function () {
+            pills.forEach(function (p) { p.classList.remove('active'); });
+            pill.classList.add('active');
+            var f = pill.dataset.filter;
+            document.querySelectorAll('#caseRelationBody tr').forEach(function (tr) {
+                tr.style.display = (f === 'all' || tr.dataset.impact === f) ? '' : 'none';
+            });
+        });
+    });
+</script>
+</body>
+</html>

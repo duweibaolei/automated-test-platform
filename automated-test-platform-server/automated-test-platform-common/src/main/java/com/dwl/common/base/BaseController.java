@@ -26,9 +26,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
         """)
 public abstract class BaseController {
 
-    /* ==================== 成功响应构建方法 ====================
-     * ==================== Success Response Builder Methods ====================
-     * */
+    /* ============================================================
+     *  成功响应构建方法
+     *  Success Response Builder Methods
+     * ============================================================ */
 
     /**
      * 返回成功响应(无数据)
@@ -64,9 +65,10 @@ public abstract class BaseController {
         return R.ok(page);
     }
 
-    /* ==================== 失败响应构建方法 ====================
-     * ==================== Failure Response Builder Methods ====================
-     * */
+    /* ============================================================
+     *  失败响应构建方法
+     *  Failure Response Builder Methods
+     * ============================================================ */
 
     /**
      * 返回失败的响应(使用 ErrorCode 枚举)

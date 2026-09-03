@@ -38,6 +38,19 @@ public abstract class DomainEvent implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 消息头: 事件类型
+     * Message header key: event type
+     */
+    public static String HEADER_EVENT_TYPE = "eventType";
+
+    /**
+     * 消息头: 事件唯一标识
+     * Message header key: event unique identifier
+     */
+    public static String HEADER_EVENT_ID = "eventId";
+
+
     @Schema(description = """
             事件唯一标识
             Event unique identifier
@@ -55,6 +68,7 @@ public abstract class DomainEvent implements Serializable {
             Event type(defaults to class name)
             """)
     private final String eventType;
+
 
     protected DomainEvent() {
         this.eventId = UUID.randomUUID().toString();

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+         automated-test-platform-web Web层模块
+         包含: Controller WebSocket 安全配置 OpenAPI配置
+         Contains: Controllers, WebSocket, Security config, OpenAPI config
+    -->
+
+    <parent>
+        <groupId>com.dwl</groupId>
+        <artifactId>automated-test-platform-server</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>automated-test-platform-web</artifactId>
+    <packaging>jar</packaging>
+    <name>Automated Test Platform Web</name>
+    <description>Web层模块 - Controller WebSocket 安全配置 OpenAPI配置</description>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+        <!--
+            内部模块
+            Internal Modules
+        -->
+        <dependency>
+            <groupId>com.dwl</groupId>
+            <artifactId>automated-test-platform-service</artifactId>
+        </dependency>
+
+        <!--
+            SpringDoc OpenAPI
+            Swagger 文档
+        -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+        </dependency>
+
+        <!--
+            Lombok
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+    </dependencies>
+
+</project>

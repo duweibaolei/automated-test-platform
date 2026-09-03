@@ -1,0 +1,199 @@
+<mxfile host="Electron" agent="doubao">
+  <diagram id="db-panorama" name="数据库表全景大纲">
+    <mxGraphModel dx="3371" dy="894" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1500" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="d_sys" parent="1" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;html=1;whiteSpace=wrap;" value="一 · 系统管理域（9表）" vertex="1">
+          <mxGeometry height="444" width="350" x="-30" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sys_user" parent="d_sys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="sys_user&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;被8表引用&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sys_role" parent="d_sys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="sys_role" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sys_permission" parent="d_sys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="sys_permission&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;树形自引用&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sys_user_role" parent="d_sys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF0DF;strokeColor=#D9A94A;fontSize=11;" value="sys_user_role&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;M:N中间表&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sys_role_permission" parent="d_sys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF0DF;strokeColor=#D9A94A;fontSize=11;" value="sys_role_permission&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;M:N中间表&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="222" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sys_environment" parent="d_sys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="sys_environment" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sys_repository" parent="d_sys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="sys_repository" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="306" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sys_dict_type" parent="d_sys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="sys_dict_type" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="348" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sys_dict_data" parent="d_sys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="sys_dict_data" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="d_code" parent="1" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;html=1;whiteSpace=wrap;" value="二 · 代码分析域（4表）" vertex="1">
+          <mxGeometry height="234" width="350" x="-40" y="633" as="geometry" />
+        </mxCell>
+        <mxCell id="t_change_analysis" parent="d_code" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="change_analysis&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;核心枢纽·被4表引用&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_git_commit" parent="d_code" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="git_commit" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="t_change_analysis_commit" parent="d_code" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF0DF;strokeColor=#D9A94A;fontSize=11;" value="change_analysis_commit&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;M:N中间表&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="t_affected_scope" parent="d_code" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="affected_scope&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;从属分析&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="d_test" parent="1" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;html=1;whiteSpace=wrap;" value="三 · 测试管理域（12表）" vertex="1">
+          <mxGeometry height="570" width="380" x="430" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="t_test_case" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="test_case&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;最核心·被7表引用&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_business_link" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="business_link" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="t_page_element" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="page_element" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="t_case_step" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="case_step&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;从属用例&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="t_case_version" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="case_version&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;版本快照&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="222" as="geometry" />
+        </mxCell>
+        <mxCell id="t_case_tag" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="case_tag" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="t_case_tag_relation" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF0DF;strokeColor=#D9A94A;fontSize=11;" value="case_tag_relation&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;M:N中间表&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="306" as="geometry" />
+        </mxCell>
+        <mxCell id="t_link_node" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="link_node&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;从属链路&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="348" as="geometry" />
+        </mxCell>
+        <mxCell id="t_case_link_relation" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF0DF;strokeColor=#D9A94A;fontSize=11;" value="case_link_relation&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;M:N中间表&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="t_case_analysis_relation" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF0DF;strokeColor=#D9A94A;fontSize=11;" value="case_analysis_relation&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;M:N中间表&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="432" as="geometry" />
+        </mxCell>
+        <mxCell id="t_test_data_set" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="test_data_set&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;独立实体&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="474" as="geometry" />
+        </mxCell>
+        <mxCell id="t_env_variable" parent="d_test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="env_variable&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;从属环境&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="356" x="12" y="516" as="geometry" />
+        </mxCell>
+        <mxCell id="d_exec" parent="1" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;html=1;whiteSpace=wrap;" value="四 · 执行管控域（5表）" vertex="1">
+          <mxGeometry height="276" width="350" x="940" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="t_test_task" parent="d_exec" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="test_task" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_task_execution" parent="d_exec" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="task_execution&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;执行层核心·被5表引用&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="t_exec_node" parent="d_exec" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="exec_node" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="t_task_case_relation" parent="d_exec" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF0DF;strokeColor=#D9A94A;fontSize=11;" value="task_case_relation&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;M:N中间表&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="t_execution_step_result" parent="d_exec" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="execution_step_result&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;从属执行&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="222" as="geometry" />
+        </mxCell>
+        <mxCell id="d_qual" parent="1" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;html=1;whiteSpace=wrap;" value="五 · 质量报表域（6表）" vertex="1">
+          <mxGeometry height="318" width="350" x="1420" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="t_test_report" parent="d_qual" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="test_report" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_report_execution_relation" parent="d_qual" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF0DF;strokeColor=#D9A94A;fontSize=11;" value="report_execution_relation&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;M:N中间表&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="t_ai_root_cause" parent="d_qual" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="ai_root_cause&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;从属执行+报告&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="t_manual_failure_mark" parent="d_qual" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="manual_failure_mark&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;1:1唯一标记&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="222" as="geometry" />
+        </mxCell>
+        <mxCell id="t_quality_daily_stats" parent="d_qual" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="quality_daily_stats&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;独立聚合&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="t_defect_record" parent="d_qual" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBE7E7;strokeColor=#C0392B;fontStyle=1;fontSize=11;" value="defect_record&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;跨4域聚合·6FK&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="d_agent" parent="1" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;html=1;whiteSpace=wrap;" value="六 · 智能体域（3表）" vertex="1">
+          <mxGeometry height="192" width="350" x="1450" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="t_agent_conversation" parent="d_agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E9F7;strokeColor=#2E6DA4;fontStyle=1;fontSize=11;" value="agent_conversation" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_agent_memory" parent="d_agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFE8F8;strokeColor=#6A4FA3;fontSize=11;" value="agent_memory&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;多态引用&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="t_agent_tool_call" parent="d_agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A8B8C8;fontSize=11;" value="agent_tool_call&lt;br&gt;&lt;font style=&#39;font-size:9px;color:#6B7280;&#39;&gt;从属会话&lt;/font&gt;" vertex="1">
+          <mxGeometry height="36" width="326" x="12" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="Vluani3FBJrhT4pKk7V6-12" edge="1" parent="d_agent" source="t_agent_conversation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;innerLoopWaypoints=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="t_agent_conversation">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="d_sys" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#FF3333;fontSize=10;fontColor=#4A4F57;exitX=0.473;exitY=0.002;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="d_code" value="仓库提交">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#FF3333;fontSize=10;fontColor=#4A4F57;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="d_test" value="运行环境">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="1362" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="d_code" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#FF3333;fontSize=10;fontColor=#4A4F57;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" value="变更影响用例">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="135" y="370" />
+              <mxPoint x="430" y="370" />
+            </Array>
+            <mxPoint x="430" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="t_test_case" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#FF3333;fontSize=10;fontColor=#4A4F57;" target="t_test_task" value="任务关联用例">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="t_test_task" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#7A8CA0;fontSize=10;fontColor=#4A4F57;" target="t_task_execution" value="产生执行">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="t_task_execution" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#FF3333;fontSize=10;fontColor=#4A4F57;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="t_test_report" value="生成报告">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1200" y="154" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#FF3333;fontSize=10;fontColor=#4A4F57;" target="t_defect_record" value="失败归档">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1280" y="190" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="d_code" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#FF3333;fontSize=10;fontColor=#4A4F57;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="d_qual" value="缺陷定位提交">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="t_test_task" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#FF3333;fontSize=10;fontColor=#4A4F57;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" value="AI根因分析">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1420" y="112" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Vluani3FBJrhT4pKk7V6-9" edge="1" parent="1" source="d_agent" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#FF3333;fontSize=10;fontColor=#4A4F57;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="d_qual" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1630" y="1040" />
+              <mxPoint x="1630" y="388" />
+            </Array>
+            <mxPoint x="1595" y="920" as="sourcePoint" />
+            <mxPoint x="1595" y="286" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

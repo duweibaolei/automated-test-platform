@@ -33,9 +33,10 @@ public final class CommonConstant {
      */
     public static final int DEFAULT_VERSION = 1;
 
-    /* ==================== 分页默认值 ====================
-     * ==================== Pagination Defaults ====================
-     * */
+    /* ============================================================
+     *  分页默认值
+     *  Pagination Defaults
+     * ============================================================ */
 
     /**
      * Default page number (starts from 1)

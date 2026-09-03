@@ -4,9 +4,9 @@ package com.dwl.common.constant;
 /**
  * Redis Key Constants
  * <p>
- * 定义系统中所有 Redis 缓存键的前缀, 确保键命名规范统一
+ * 定义系统中所有 Redis 缓存键的前缀，确保键命名规范统一
  * <p>
- * Defines all redis cache key prefixes in the system, 
+ * Defines all redis cache key prefixes in the system,
  * ensuring consistent and standardized key naming conventions
  *
  * @Author Dwl
@@ -28,24 +28,26 @@ public final class RedisKeyConstant {
                 """);
     }
 
-    /* ==================== 登陆认证 ====================
-     * ==================== Login Authentication ====================
-     * */
+    /* ============================================================
+     *  登陆认证
+     *  Login Authentication
+     * ============================================================ */
 
     /**
      * 登陆 Token 缓存键前缀
      * <p>
      * Login token cache key prefix
      * <p>
-     * 完整的键格式: login:token:{token 值}
+     * 完整的键格式：login:token:{token 值}
      * <p>
      * Full key format: login:token{token value}
      */
     public static final String LOGIN_TOKEN_KEY = "login:token:";
 
-    /* ==================== 字典管理 ====================
-     * ==================== Dictionary Management ====================
-     * */
+    /* ============================================================
+     *  字典管理
+     *  Dictionary Management
+     * ============================================================ */
 
     /**
      * 字典类型缓存键设置
@@ -63,9 +65,10 @@ public final class RedisKeyConstant {
      */
     public static final String DICT_DATA_KEY = "dict:data:";
 
-    /* ==================== 任务状态 ====================
-     * ==================== Task Status ====================
-     * */
+    /* ============================================================
+     *  任务状态
+     *  Task Status
+     * ============================================================ */
 
     /**
      * Task status cache key prefix

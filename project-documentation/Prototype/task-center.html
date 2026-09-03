@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Test Platform - 测试任务中心</title>
+    <style>
+        :root {
+            --primary: #1668dc;
+            --primary-light: #eef4fb;
+            --primary-hover: #2b7de9;
+            --success: #16a34a;
+            --warning: #d97706;
+            --error: #dc2626;
+            --text-primary: #0d1117;
+            --text-secondary: #57606a;
+            --text-muted: #8b949e;
+            --border: #ebecef;
+            --bg-page: #f6f8fa;
+            --bg-card: #fff;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+        }
+
+        .sidebar {
+            position: fixed; left: 0; top: 0; bottom: 0; width: 220px;
+            background: #001529; color: #fff; z-index: 100;
+            display: flex; flex-direction: column;
+        }
+        .sidebar-logo { height: 64px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(255,255,255,.1); }
+        .sidebar-logo h1 { font-size: 18px; font-weight: 600; letter-spacing: 1px; }
+        .sidebar-logo span { color: var(--primary); }
+        .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+        .nav-section { padding: 16px 24px 8px; font-size: 12px; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 10px; padding: 12px 24px;
+            cursor: pointer; transition: all .2s;
+            color: rgba(255,255,255,.65); text-decoration: none; font-size: 14px;
+        }
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,.08); }
+        .nav-item.active { color: #fff; background: rgba(22,104,220,.16); box-shadow: inset 3px 0 0 var(--primary); }
+        .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+        .nav-badge { margin-left: auto; background: var(--error); color: #fff; font-size: 11px; padding: 1px 6px; border-radius: 10px; min-width: 18px; text-align: center; }
+
+        .main { margin-left: 220px; min-height: 100vh; }
+        .header {
+            height: 64px; background: var(--bg-card); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 32px;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-breadcrumb { color: var(--text-secondary); font-size: 14px; }
+        .header-breadcrumb a { color: var(--primary); text-decoration: none; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+        .content { padding: 24px 32px; }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;
+            border-radius: 6px; font-size: 14px; cursor: pointer;
+            border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary);
+            transition: all .2s;
+        }
+        .btn:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); color: #fff; }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        .btn-danger { color: var(--error); border-color: var(--error); }
+        .btn-warning { color: var(--warning); border-color: var(--warning); }
+
+        .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .toolbar-left { display: flex; align-items: center; gap: 12px; }
+        .toolbar-right { display: flex; align-items: center; gap: 12px; }
+
+        .tab-group { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+        .tab-item {
+            padding: 8px 16px; font-size: 14px; cursor: pointer; background: var(--bg-card);
+            border: none; color: var(--text-secondary); transition: all .2s;
+        }
+        .tab-item.active { background: var(--primary); color: #fff; }
+        .tab-item:hover:not(.active) { color: var(--primary); }
+
+        .card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); }
+        .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .card-header h3 { font-size: 15px; font-weight: 600; }
+        .card-body { padding: 16px 20px; }
+
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+        .stat-card { background: var(--bg-card); border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); }
+        .stat-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+        .stat-value { font-size: 24px; font-weight: 600; }
+
+        .task-list { padding: 0; }
+        .task-item { padding: 20px; border-bottom: 1px solid var(--border); transition: background .15s; }
+        .task-item:last-child { border-bottom: none; }
+        .task-item:hover { background: #fafafa; }
+        .task-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .task-id { font-family: 'SF Mono', Consolas, monospace; font-size: 13px; color: var(--text-muted); }
+        .task-name { font-size: 15px; font-weight: 600; flex: 1; }
+        .task-status { font-size: 12px; padding: 3px 10px; border-radius: 4px; font-weight: 500; }
+        .status-running { background: var(--primary-light); color: var(--primary); }
+        .status-completed { background: #f6ffed; color: var(--success); }
+        .status-failed { background: #fff2f0; color: var(--error); }
+        .status-pending { background: #f5f5f5; color: var(--text-muted); }
+        .status-paused { background: #fff7e6; color: var(--warning); }
+        .task-trigger { font-size: 12px; padding: 2px 8px; border-radius: 4px; }
+        .trigger-auto { background: var(--primary-light); color: var(--primary); }
+        .trigger-manual { background: #f6ffed; color: var(--success); }
+        .task-meta { display: flex; gap: 24px; font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+        .task-meta span { display: inline-flex; align-items: center; gap: 4px; }
+        .task-progress { margin-bottom: 10px; }
+        .progress-bar { width: 100%; height: 8px; background: #f0f0f0; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 4px; transition: width .3s; }
+        .progress-running { background: var(--primary); }
+        .progress-pass { background: var(--success); }
+        .progress-fail { background: var(--error); }
+        .progress-info { display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; color: var(--text-muted); }
+        .task-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .log-panel {
+            background: #1e1e1e; border-radius: 8px; padding: 16px;
+            font-family: 'SF Mono', Consolas, 'Courier New', monospace;
+            font-size: 12px; line-height: 1.8; color: #d4d4d4;
+            max-height: 280px; overflow-y: auto; margin-top: 16px;
+        }
+        .log-time { color: #6a9955; }
+        .log-info { color: #569cd6; }
+        .log-success { color: #4ec9b0; }
+        .log-error { color: #f44747; }
+        .log-warn { color: #dcdcaa; }
+
+        /* 对话框 */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: var(--bg-card); border-radius: 12px; width: 640px; max-height: 85vh; overflow-y: auto; box-shadow: 0 6px 30px rgba(0,0,0,.2); }
+        .modal-lg { width: 900px; }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .modal-header h3 { font-size: 16px; font-weight: 600; }
+        .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); padding: 4px; }
+        .modal-body { padding: 24px; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+        .form-label .required { color: var(--error); margin-left: 2px; }
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 14px; color: var(--text-primary); outline: none;
+            font-family: inherit;
+        }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(22,119,255,.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+
+        .case-select-list { max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
+        .case-select-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-size: 13px; border-radius: 4px; cursor: pointer; }
+        .case-select-item:hover { background: var(--primary-light); }
+        .case-select-item input[type="checkbox"] { accent-color: var(--primary); }
+
+        .layout { display: grid; grid-template-columns: 1fr 360px; gap: 20px; }
+
+        /* 页内 Tab */
+        .page-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 20px; background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); }
+        .page-tab {
+            padding: 14px 24px; font-size: 14px; cursor: pointer;
+            border-bottom: 2px solid transparent; color: var(--text-secondary); transition: all .2s;
+            display: flex; align-items: center; gap: 8px;
+            background: none; border-top: none; border-left: none; border-right: none;
+        }
+        .page-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
+        .page-tab:hover:not(.active) { color: var(--primary); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { padding: 12px 16px; font-size: 13px; color: var(--text-secondary); font-weight: 500; text-align: left; background: #fafafa; border-bottom: 1px solid var(--border); }
+        .data-table td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .data-table tr:hover td { background: #fafafa; }
+        .mono-id { font-family: 'SF Mono', Consolas, monospace; color: var(--primary); font-size: 13px; }
+
+        /* 节点卡片 */
+        .node-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+        .node-card { border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; transition: all .2s; background: var(--bg-card); }
+        .node-card:hover { border-color: var(--primary); box-shadow: var(--shadow-hover); }
+        .node-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .node-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .node-dot.online { background: var(--success); }
+        .node-dot.offline { background: var(--text-muted); }
+        .node-dot.busy { background: var(--warning); }
+        .node-name { font-size: 15px; font-weight: 600; flex: 1; }
+        .node-meta { display: flex; gap: 16px; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; flex-wrap: wrap; }
+        .node-browser-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+        .browser-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--primary-light); color: var(--primary); }
+        .concurrency-bar { height: 8px; background: #f0f0f0; border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+        .concurrency-fill { height: 100%; border-radius: 4px; background: var(--primary); }
+        .concurrency-info { font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .node-actions { display: flex; gap: 6px; }
+
+        .cron-badge { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background: #f6f8fa; color: var(--text-secondary); padding: 3px 8px; border-radius: 4px; }
+        .timing-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #f0f5ff; color: #2f54eb; font-weight: 500; }
+
+        /* 步骤结果 */
+        .step-result-pass { color: var(--success); font-weight: 600; }
+        .step-result-fail { color: var(--error); font-weight: 600; }
+        .locator-strategy {
+            font-size: 11px; padding: 2px 6px; border-radius: 3px;
+            background: #f6f8fa; color: var(--text-secondary);
+        }
+        .locator-strategy.backup { background: #fff7e6; color: var(--warning); }
+
+        .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 16px; }
+        .pagination button { min-width: 32px; height: 32px; padding: 0 8px; border: 1px solid var(--border); background: #fff; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .pagination button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pagination span { font-size: 13px; color: var(--text-muted); }
+
+        .cron-section { display: none; padding: 12px 16px; background: #fafafa; border-radius: 8px; margin-top: 8px; }
+        .cron-section.show { display: block; }
+        .cron-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+        .cron-preset {
+            font-size: 12px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px;
+            background: #fff; cursor: pointer; transition: all .15s;
+        }
+        .cron-preset:hover { border-color: var(--primary); color: var(--primary); }
+
+        .switch-box { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .switch {
+            position: relative; display: inline-block; width: 40px; height: 22px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .3s; border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(18px); }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-logo"><h1><span>Delta</span>Test</h1></div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">概览</div>
+        <a class="nav-item" href="index.html"><span class="icon">📊</span> 工作台</a>
+        <div class="nav-section">业务模块</div>
+        <a class="nav-item" href="change-analysis.html"><span class="icon">🔍</span> 变更分析<span class="nav-badge">3</span></a>
+        <a class="nav-item" href="test-management.html"><span class="icon">🧪</span> 用例管理</a>
+        <a class="nav-item active" href="task-center.html"><span class="icon">⚡</span> 任务中心<span class="nav-badge">1</span></a>
+        <a class="nav-item" href="report-center.html"><span class="icon">📋</span> 质量报告</a>
+        <div class="nav-section">系统</div>
+        <a class="nav-item" href="system-settings.html"><span class="icon">⚙️</span> 系统设置</a>
+    </nav>
+</aside>
+
+<main class="main">
+    <header class="header">
+        <div class="header-left">
+            <span class="header-breadcrumb"><a href="index.html">工作台</a> / 测试任务中心</span>
+        </div>
+        <div class="header-right">
+            <div class="avatar">A</div>
+        </div>
+    </header>
+
+    <div class="content">
+        <!-- 页内 Tab -->
+        <div class="page-tabs">
+            <button class="page-tab active" data-target="panel-tasks">⚡ 任务列表</button>
+            <button class="page-tab" data-target="panel-nodes">🖥️ 执行节点</button>
+            <button class="page-tab" data-target="panel-schedule">⏰ 定时任务</button>
+        </div>
+
+        <!-- ============ Panel 1: 任务列表 ============ -->
+        <div class="tab-panel active" id="panel-tasks">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="tab-group">
+                        <button class="tab-item active">全部任务</button>
+                        <button class="tab-item">执行中</button>
+                        <button class="tab-item">已完成</button>
+                        <button class="tab-item">待执行</button>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn" onclick="document.getElementById('importModal').classList.add('show')">📥 导入外部用例</button>
+                    <button class="btn btn-primary" onclick="document.getElementById('createModal').classList.add('show')">➕ 手动创建任务</button>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-label">执行中</div><div class="stat-value" style="color:var(--primary)">3</div></div>
+                <div class="stat-card"><div class="stat-label">今日完成</div><div class="stat-value" style="color:var(--success)">12</div></div>
+                <div class="stat-card"><div class="stat-label">今日失败</div><div class="stat-value" style="color:var(--error)">1</div></div>
+                <div class="stat-card"><div class="stat-label">待执行</div><div class="stat-value" style="color:var(--warning)">5</div></div>
+            </div>
+
+            <div class="layout">
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>⚡ 任务列表</h3>
+                            <span style="font-size:13px;color:var(--text-muted)">共 21 个任务</span>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-item">
+                                <div class="task-top">
+                                    <span class="task-id">#1026</span>
+                                    <span class="task-name">feature/user-auth 变更回归</span>
+                                    <span class="task-trigger trigger-auto">自动触发</span>
+                                    <span class="task-status status-running">● 执行中</span>
+                                </div>
+                                <div class="task-meta">
+                                    <span>🧪 18 用例</span><span>🌿 feature/user-auth</span>
+                                    <span>⏱️ 已执行 3m 24s</span><span>👤 Webhook</span>
+                                </div>
+                                <div class="task-progress">
+                                    <div class="progress-bar"><div class="progress-fill progress-running" style="width:67%"></div></div>
+                                    <div class="progress-info"><span>12/18 已完成 · 12 通过</span><span>67%</span></div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm btn-warning">⏸ 暂停</button>
+                                    <button class="btn btn-sm btn-danger">⏹ 终止</button>
+                                    <button class="btn btn-sm">📋 查看报告</button>
+                                </div>
+                            </div>
+
+                            <div class="task-item">
+                                <div class="task-top">
+                                    <span class="task-id">#1025</span>
+                                    <span class="task-name">登录模块专项验证</span>
+                                    <span class="task-trigger trigger-manual">手动触发</span>
+                                    <span class="task-status status-running">● 执行中</span>
+                                </div>
+                                <div class="task-meta">
+                                    <span>🧪 8 用例</span><span>🖥️ Chrome 120</span>
+                                    <span>⏱️ 已执行 1m 45s</span><span>👤 Admin</span>
+                                </div>
+                                <div class="task-progress">
+                                    <div class="progress-bar"><div class="progress-fill progress-running" style="width:50%"></div></div>
+                                    <div class="progress-info"><span>4/8 已完成 · 4 通过</span><span>50%</span></div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm btn-warning">⏸ 暂停</button>
+                                    <button class="btn btn-sm btn-danger">⏹ 终止</button>
+                                </div>
+                            </div>
+
+                            <div class="task-item">
+                                <div class="task-top">
+                                    <span class="task-id">#1024</span>
+                                    <span class="task-name">fix/order-stock 变更回归</span>
+                                    <span class="task-trigger trigger-auto">自动触发</span>
+                                    <span class="task-status status-completed">● 已完成</span>
+                                </div>
+                                <div class="task-meta">
+                                    <span>🧪 30 用例</span><span>🌿 fix/order-stock</span>
+                                    <span>⏱️ 5m 12s</span><span>👤 Webhook</span>
+                                </div>
+                                <div class="task-progress">
+                                    <div class="progress-bar"><div class="progress-fill progress-pass" style="width:93%"></div></div>
+                                    <div class="progress-info"><span>28 通过 · 2 失败</span><span>93.3%</span></div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm" onclick="document.getElementById('stepResultModal').classList.add('show')">📋 步骤结果</button>
+                                    <button class="btn btn-sm">📋 查看报告</button>
+                                    <button class="btn btn-sm">🔄 重新执行</button>
+                                </div>
+                            </div>
+
+                            <div class="task-item">
+                                <div class="task-top">
+                                    <span class="task-id">#1023</span>
+                                    <span class="task-name">订单中心全链路冒烟测试</span>
+                                    <span class="task-trigger trigger-manual">手动触发</span>
+                                    <span class="task-status status-completed">● 已完成</span>
+                                </div>
+                                <div class="task-meta">
+                                    <span>🧪 45 用例</span><span>🖥️ Chrome + Safari</span>
+                                    <span>⏱️ 12m 30s</span><span>👤 QA-Lead</span>
+                                </div>
+                                <div class="task-progress">
+                                    <div class="progress-bar"><div class="progress-fill progress-pass" style="width:100%"></div></div>
+                                    <div class="progress-info"><span>45 通过 · 0 失败</span><span>100%</span></div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm" onclick="document.getElementById('stepResultModal').classList.add('show')">📋 步骤结果</button>
+                                    <button class="btn btn-sm">📋 查看报告</button>
+                                    <button class="btn btn-sm">🔄 重新执行</button>
+                                </div>
+                            </div>
+
+                            <div class="task-item">
+                                <div class="task-top">
+                                    <span class="task-id">#1022</span>
+                                    <span class="task-name">支付模块回归（昨日遗留）</span>
+                                    <span class="task-trigger trigger-auto">自动触发</span>
+                                    <span class="task-status status-failed">● 失败</span>
+                                </div>
+                                <div class="task-meta">
+                                    <span>🧪 22 用例</span><span>🌿 hotfix/pay-timeout</span>
+                                    <span>⏱️ 6m 48s</span><span>👤 Webhook</span>
+                                </div>
+                                <div class="task-progress">
+                                    <div class="progress-bar"><div class="progress-fill progress-fail" style="width:77%"></div></div>
+                                    <div class="progress-info"><span>17 通过 · 5 失败</span><span>77.3%</span></div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm" onclick="document.getElementById('stepResultModal').classList.add('show')">📋 步骤结果</button>
+                                    <button class="btn btn-sm">📋 查看报告</button>
+                                    <button class="btn btn-sm btn-primary">🔄 重新执行失败用例</button>
+                                </div>
+                            </div>
+
+                            <div class="task-item">
+                                <div class="task-top">
+                                    <span class="task-id">#1027</span>
+                                    <span class="task-name">搜索模块兼容性测试</span>
+                                    <span class="task-trigger trigger-manual">手动触发</span>
+                                    <span class="task-status status-pending">● 待执行</span>
+                                </div>
+                                <div class="task-meta">
+                                    <span>🧪 12 用例</span><span>🖥️ Chrome + Firefox</span><span>👤 Tester</span>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm btn-primary">▶ 立即执行</button>
+                                    <button class="btn btn-sm">✏️ 编辑</button>
+                                    <button class="btn btn-sm btn-danger">🗑 删除</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pagination">
+                            <button disabled>«</button>
+                            <button class="active">1</button>
+                            <button>2</button>
+                            <button>3</button>
+                            <button>4</button>
+                            <button>»</button>
+                            <span>共 21 条，每页 8 条</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧 -->
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>📡 实时日志 — #1025</h3>
+                            <span style="font-size:12px;color:var(--success)">● WebSocket 连接中</span>
+                        </div>
+                        <div style="padding:16px">
+                            <div style="display:flex;gap:8px;margin-bottom:12px">
+                                <button class="btn btn-sm" style="background:var(--primary-light);color:var(--primary);border-color:var(--primary)">全部</button>
+                                <button class="btn btn-sm">信息</button>
+                                <button class="btn btn-sm">警告</button>
+                                <button class="btn btn-sm" style="color:var(--error)">错误</button>
+                            </div>
+                            <div class="log-panel">
+                                <div><span class="log-time">[10:32:15]</span> <span class="log-info">[INFO]</span> 任务 #1025 开始执行 · 登录模块专项验证</div>
+                                <div><span class="log-time">[10:32:16]</span> <span class="log-info">[INFO]</span> 启动浏览器 Chrome 120 · 分辨率 1920x1080</div>
+                                <div><span class="log-time">[10:32:18]</span> <span class="log-info">[INFO]</span> ---- TC-0001 用户名密码登录成功 ----</div>
+                                <div><span class="log-time">[10:32:19]</span> <span class="log-info">[INFO]</span> 步骤1: 导航到 /login</div>
+                                <div><span class="log-time">[10:32:20]</span> <span class="log-info">[INFO]</span> 步骤2: 输入用户名 admin@test.com</div>
+                                <div><span class="log-time">[10:32:21]</span> <span class="log-info">[INFO]</span> 步骤3: 输入密码 ********</div>
+                                <div><span class="log-time">[10:32:22]</span> <span class="log-info">[INFO]</span> 步骤4: 点击登录按钮</div>
+                                <div><span class="log-time">[10:32:24]</span> <span class="log-success">[PASS]</span> 断言: URL 包含 /dashboard ✓</div>
+                                <div><span class="log-time">[10:32:25]</span> <span class="log-success">[PASS]</span> 断言: 用户头像元素可见 ✓</div>
+                                <div><span class="log-time">[10:32:25]</span> <span class="log-success">[PASS]</span> TC-0001 执行通过 (耗时 7.2s)</div>
+                                <div><span class="log-time">[10:32:27]</span> <span class="log-info">[INFO]</span> ---- TC-0002 OAuth2.0 第三方登录回调 ----</div>
+                                <div><span class="log-time">[10:32:28]</span> <span class="log-info">[INFO]</span> 步骤1: 点击 OAuth-GitHub-Button</div>
+                                <div><span class="log-time">[10:32:30]</span> <span class="log-warn">[WARN]</span> 元素定位策略1失败，尝试备份定位策略...</div>
+                                <div><span class="log-time">[10:32:31]</span> <span class="log-info">[INFO]</span> 备份定位策略成功 · 继续执行</div>
+                                <div><span class="log-time">[10:32:33]</span> <span class="log-info">[INFO]</span> 步骤2: 等待 Auth-Callback-Page (3000ms)</div>
+                                <div style="color:#555"><span class="log-time">[10:32:36]</span> <span style="color:#888">等待中...</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top:16px">
+                        <div class="card-header">
+                            <h3>🖥️ 执行节点状态</h3>
+                        </div>
+                        <div style="padding:16px">
+                            <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
+                                <span style="width:8px;height:8px;border-radius:50%;background:var(--success)"></span>
+                                <span style="font-size:13px;flex:1">Node-01</span>
+                                <span style="font-size:12px;color:var(--text-muted)">执行中 #1026</span>
+                                <span style="font-size:12px;color:var(--success)">健康</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
+                                <span style="width:8px;height:8px;border-radius:50%;background:var(--success)"></span>
+                                <span style="font-size:13px;flex:1">Node-02</span>
+                                <span style="font-size:12px;color:var(--text-muted)">执行中 #1025</span>
+                                <span style="font-size:12px;color:var(--success)">健康</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+                                <span style="width:8px;height:8px;border-radius:50%;background:var(--text-muted)"></span>
+                                <span style="font-size:13px;flex:1">Node-03</span>
+                                <span style="font-size:12px;color:var(--text-muted)">空闲</span>
+                                <span style="font-size:12px;color:var(--success)">健康</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Panel 2: 执行节点 ============ -->
+        <div class="tab-panel" id="panel-nodes">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="tab-group">
+                        <button class="tab-item active">全部节点</button>
+                        <button class="tab-item">在线</button>
+                        <button class="tab-item">离线</button>
+                        <button class="tab-item">繁忙</button>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn">🔍 批量心跳检测</button>
+                    <button class="btn btn-primary" onclick="document.getElementById('nodeModal').classList.add('show')">➕ 新增执行节点</button>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-label">节点总数</div><div class="stat-value" style="color:var(--primary)">6</div></div>
+                <div class="stat-card"><div class="stat-label">在线节点</div><div class="stat-value" style="color:var(--success)">5</div></div>
+                <div class="stat-card"><div class="stat-label">离线节点</div><div class="stat-value" style="color:var(--error)">1</div></div>
+                <div class="stat-card"><div class="stat-label">整体并发使用率</div><div class="stat-value" style="color:var(--warning)">42%</div></div>
+            </div>
+
+            <div class="node-grid">
+                <div class="node-card">
+                    <div class="node-top">
+                        <span class="node-dot busy"></span>
+                        <span class="node-name">Node-01 · 主执行节点</span>
+                        <span class="task-status status-running">执行中</span>
+                    </div>
+                    <div class="node-meta">
+                        <span>🏷️ <span class="mono-id">EN-001</span></span>
+                        <span>🌐 10.0.1.21:4444</span>
+                    </div>
+                    <div class="node-browser-tags">
+                        <span class="browser-tag">Chrome 120</span>
+                        <span class="browser-tag">Firefox 121</span>
+                        <span class="browser-tag">Edge 120</span>
+                    </div>
+                    <div class="concurrency-bar"><div class="concurrency-fill" style="width:75%"></div></div>
+                    <div class="concurrency-info"><span>并发使用: 6 / 8</span><span>💓 最近心跳: 8s 前</span></div>
+                    <div class="node-actions">
+                        <button class="btn btn-sm">💓 检测心跳</button>
+                        <button class="btn btn-sm">✏️ 编辑</button>
+                        <button class="btn btn-sm btn-danger">🗑 删除</button>
+                    </div>
+                </div>
+
+                <div class="node-card">
+                    <div class="node-top">
+                        <span class="node-dot busy"></span>
+                        <span class="node-name">Node-02 · Web执行节点</span>
+                        <span class="task-status status-running">执行中</span>
+                    </div>
+                    <div class="node-meta">
+                        <span>🏷️ <span class="mono-id">EN-002</span></span>
+                        <span>🌐 10.0.1.22:4444</span>
+                    </div>
+                    <div class="node-browser-tags">
+                        <span class="browser-tag">Chrome 120</span>
+                        <span class="browser-tag">Safari 17</span>
+                    </div>
+                    <div class="concurrency-bar"><div class="concurrency-fill" style="width:50%"></div></div>
+                    <div class="concurrency-info"><span>并发使用: 2 / 4</span><span>💓 最近心跳: 12s 前</span></div>
+                    <div class="node-actions">
+                        <button class="btn btn-sm">💓 检测心跳</button>
+                        <button class="btn btn-sm">✏️ 编辑</button>
+                        <button class="btn btn-sm btn-danger">🗑 删除</button>
+                    </div>
+                </div>
+
+                <div class="node-card">
+                    <div class="node-top">
+                        <span class="node-dot online"></span>
+                        <span class="node-name">Node-03 · 轻量节点</span>
+                        <span class="task-status status-pending">空闲</span>
+                    </div>
+                    <div class="node-meta">
+                        <span>🏷️ <span class="mono-id">EN-003</span></span>
+                        <span>🌐 10.0.1.23:4444</span>
+                    </div>
+                    <div class="node-browser-tags">
+                        <span class="browser-tag">Chrome 120</span>
+                    </div>
+                    <div class="concurrency-bar"><div class="concurrency-fill" style="width:0%"></div></div>
+                    <div class="concurrency-info"><span>并发使用: 0 / 2</span><span>💓 最近心跳: 5s 前</span></div>
+                    <div class="node-actions">
+                        <button class="btn btn-sm">💓 检测心跳</button>
+                        <button class="btn btn-sm">✏️ 编辑</button>
+                        <button class="btn btn-sm btn-danger">🗑 删除</button>
+                    </div>
+                </div>
+
+                <div class="node-card">
+                    <div class="node-top">
+                        <span class="node-dot online"></span>
+                        <span class="node-name">Node-04 · API执行节点</span>
+                        <span class="task-status status-pending">空闲</span>
+                    </div>
+                    <div class="node-meta">
+                        <span>🏷️ <span class="mono-id">EN-004</span></span>
+                        <span>🌐 10.0.1.24:4444</span>
+                    </div>
+                    <div class="node-browser-tags">
+                        <span class="browser-tag" style="background:#f6ffed;color:var(--success)">API Only</span>
+                    </div>
+                    <div class="concurrency-bar"><div class="concurrency-fill" style="width:25%"></div></div>
+                    <div class="concurrency-info"><span>并发使用: 4 / 16</span><span>💓 最近心跳: 3s 前</span></div>
+                    <div class="node-actions">
+                        <button class="btn btn-sm">💓 检测心跳</button>
+                        <button class="btn btn-sm">✏️ 编辑</button>
+                        <button class="btn btn-sm btn-danger">🗑 删除</button>
+                    </div>
+                </div>
+
+                <div class="node-card">
+                    <div class="node-top">
+                        <span class="node-dot online"></span>
+                        <span class="node-name">Node-05 · 移动端节点</span>
+                        <span class="task-status status-paused">待机</span>
+                    </div>
+                    <div class="node-meta">
+                        <span>🏷️ <span class="mono-id">EN-005</span></span>
+                        <span>🌐 10.0.1.25:4723</span>
+                    </div>
+                    <div class="node-browser-tags">
+                        <span class="browser-tag" style="background:#fff7e6;color:var(--warning)">Android 13</span>
+                        <span class="browser-tag" style="background:#fff7e6;color:var(--warning)">iOS 17</span>
+                    </div>
+                    <div class="concurrency-bar"><div class="concurrency-fill" style="width:0%"></div></div>
+                    <div class="concurrency-info"><span>并发使用: 0 / 4</span><span>💓 最近心跳: 20s 前</span></div>
+                    <div class="node-actions">
+                        <button class="btn btn-sm">💓 检测心跳</button>
+                        <button class="btn btn-sm">✏️ 编辑</button>
+                        <button class="btn btn-sm btn-danger">🗑 删除</button>
+                    </div>
+                </div>
+
+                <div class="node-card" style="opacity:.7">
+                    <div class="node-top">
+                        <span class="node-dot offline"></span>
+                        <span class="node-name">Node-06 · 备用节点</span>
+                        <span class="task-status status-failed">离线</span>
+                    </div>
+                    <div class="node-meta">
+                        <span>🏷️ <span class="mono-id">EN-006</span></span>
+                        <span>🌐 10.0.1.26:4444</span>
+                    </div>
+                    <div class="node-browser-tags">
+                        <span class="browser-tag">Chrome 120</span>
+                        <span class="browser-tag">Firefox 121</span>
+                    </div>
+                    <div class="concurrency-bar"><div class="concurrency-fill" style="width:0%;background:var(--text-muted)"></div></div>
+                    <div class="concurrency-info"><span>并发使用: 0 / 4</span><span>💓 最近心跳: 2h 前</span></div>
+                    <div class="node-actions">
+                        <button class="btn btn-sm btn-warning">🔄 重新连接</button>
+                        <button class="btn btn-sm">✏️ 编辑</button>
+                        <button class="btn btn-sm btn-danger">🗑 删除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Panel 3: 定时任务 ============ -->
+        <div class="tab-panel" id="panel-schedule">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="tab-group">
+                        <button class="tab-item active">全部</button>
+                        <button class="tab-item">运行中</button>
+                        <button class="tab-item">已暂停</button>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-primary" onclick="document.getElementById('scheduleModal').classList.add('show')">➕ 新增定时任务</button>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-label">定时任务总数</div><div class="stat-value" style="color:var(--primary)">9</div></div>
+                <div class="stat-card"><div class="stat-label">运行中</div><div class="stat-value" style="color:var(--success)">7</div></div>
+                <div class="stat-card"><div class="stat-label">今日待触发</div><div class="stat-value" style="color:var(--warning)">4</div></div>
+                <div class="stat-card"><div class="stat-label">最近30天触发次数</div><div class="stat-value" style="color:var(--primary)">126</div></div>
+            </div>
+
+            <div class="card">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>任务名称</th>
+                            <th>CRON 表达式</th>
+                            <th>下次执行时间</th>
+                            <th>执行环境</th>
+                            <th>触发人</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div style="font-weight:500">每日冒烟测试</div>
+                                <div style="font-size:12px;color:var(--text-muted)">全量 P0 用例 · 28 条</div>
+                            </td>
+                            <td><span class="cron-badge">0 0 2 * * ?</span></td>
+                            <td>
+                                <span class="timing-badge">今日 02:00:00</span>
+                                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">距现在 3h 28m</div>
+                            </td>
+                            <td>测试环境 (test)</td>
+                            <td>Admin</td>
+                            <td><span class="task-status status-running">● 运行中</span></td>
+                            <td>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm btn-warning">⏸ 暂停</button>
+                                    <button class="btn btn-sm">▶️ 立即触发</button>
+                                    <button class="btn btn-sm">✏️ 编辑</button>
+                                    <button class="btn btn-sm btn-danger">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="font-weight:500">每周全量回归</div>
+                                <div style="font-size:12px;color:var(--text-muted)">订单/支付/用户 · 180 条</div>
+                            </td>
+                            <td><span class="cron-badge">0 30 1 ? * SUN</span></td>
+                            <td>
+                                <span class="timing-badge">周日 01:30:00</span>
+                                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">距现在 5d 2h</div>
+                            </td>
+                            <td>预发环境 (staging)</td>
+                            <td>QA-Lead</td>
+                            <td><span class="task-status status-running">● 运行中</span></td>
+                            <td>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm btn-warning">⏸ 暂停</button>
+                                    <button class="btn btn-sm">▶️ 立即触发</button>
+                                    <button class="btn btn-sm">✏️ 编辑</button>
+                                    <button class="btn btn-sm btn-danger">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="font-weight:500">支付模块每小时巡检</div>
+                                <div style="font-size:12px;color:var(--text-muted)">核心支付链路 · 12 条</div>
+                            </td>
+                            <td><span class="cron-badge">0 15 * * * ?</span></td>
+                            <td>
+                                <span class="timing-badge">10:15:00</span>
+                                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">距现在 13m</div>
+                            </td>
+                            <td>生产巡检 (prod-lite)</td>
+                            <td>系统</td>
+                            <td><span class="task-status status-running">● 运行中</span></td>
+                            <td>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm btn-warning">⏸ 暂停</button>
+                                    <button class="btn btn-sm">▶️ 立即触发</button>
+                                    <button class="btn btn-sm">✏️ 编辑</button>
+                                    <button class="btn btn-sm btn-danger">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="font-weight:500">搜索性能基准测试</div>
+                                <div style="font-size:12px;color:var(--text-muted)">性能指标 · 4 条</div>
+                            </td>
+                            <td><span class="cron-badge">0 0 4 ? * MON,FRI</span></td>
+                            <td>
+                                <span class="timing-badge">周五 04:00:00</span>
+                                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">距现在 3d 5h</div>
+                            </td>
+                            <td>性能环境 (perf)</td>
+                            <td>Perf-Admin</td>
+                            <td><span class="task-status status-paused">● 已暂停</span></td>
+                            <td>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm btn-primary">▶️ 启用</button>
+                                    <button class="btn btn-sm">▶️ 立即触发</button>
+                                    <button class="btn btn-sm">✏️ 编辑</button>
+                                    <button class="btn btn-sm btn-danger">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="font-weight:500">API 契约健康检查</div>
+                                <div style="font-size:12px;color:var(--text-muted)">Swagger 契约一致性 · 全量 API</div>
+                            </td>
+                            <td><span class="cron-badge">0 */30 * * * ?</span></td>
+                            <td>
+                                <span class="timing-badge">10:30:00</span>
+                                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">距现在 28m</div>
+                            </td>
+                            <td>测试环境 (test)</td>
+                            <td>系统</td>
+                            <td><span class="task-status status-running">● 运行中</span></td>
+                            <td>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm btn-warning">⏸ 暂停</button>
+                                    <button class="btn btn-sm">▶️ 立即触发</button>
+                                    <button class="btn btn-sm">✏️ 编辑</button>
+                                    <button class="btn btn-sm btn-danger">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="font-weight:500">用户登录压力测试</div>
+                                <div style="font-size:12px;color:var(--text-muted)">压测场景 · 并发 500</div>
+                            </td>
+                            <td><span class="cron-badge">0 0 6 1 * ?</span></td>
+                            <td>
+                                <span class="timing-badge">10-01 06:00:00</span>
+                                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">距现在 29d</div>
+                            </td>
+                            <td>性能环境 (perf)</td>
+                            <td>Perf-Admin</td>
+                            <td><span class="task-status status-running">● 运行中</span></td>
+                            <td>
+                                <div class="task-actions">
+                                    <button class="btn btn-sm btn-warning">⏸ 暂停</button>
+                                    <button class="btn btn-sm">▶️ 立即触发</button>
+                                    <button class="btn btn-sm">✏️ 编辑</button>
+                                    <button class="btn btn-sm btn-danger">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button disabled>«</button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>»</button>
+                    <span>共 9 条，每页 8 条</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- ====== 手动创建任务对话框 (增加保存为定时任务) ====== -->
+<div class="modal-overlay" id="createModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>➕ 手动创建测试任务</h3>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('show')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">任务名称<span class="required">*</span></label>
+                <input class="form-input" placeholder="输入任务名称">
+            </div>
+            <div class="form-group">
+                <label class="form-label">选择用例范围<span class="required">*</span></label>
+                <div style="display:flex;gap:8px;margin-bottom:8px">
+                    <button class="btn btn-sm" style="background:var(--primary-light);color:var(--primary);border-color:var(--primary)">按用例集</button>
+                    <button class="btn btn-sm">按业务模块</button>
+                    <button class="btn btn-sm">按业务链路</button>
+                </div>
+                <div class="case-select-list">
+                    <div class="case-select-item"><input type="checkbox" checked> TC-0001 用户名密码登录成功 <span class="task-trigger trigger-auto" style="margin-left:auto;font-size:11px">auto</span></div>
+                    <div class="case-select-item"><input type="checkbox" checked> TC-0002 OAuth2.0 第三方登录回调 <span class="task-trigger trigger-manual" style="margin-left:auto;font-size:11px;background:#fff7e6;color:var(--warning)">hybrid</span></div>
+                    <div class="case-select-item"><input type="checkbox" checked> TC-0003 订单创建-库存扣减并发验证 <span class="task-trigger trigger-auto" style="margin-left:auto;font-size:11px">auto</span></div>
+                    <div class="case-select-item"><input type="checkbox"> TC-0250 商品搜索-模糊匹配结果校验 <span class="task-trigger trigger-manual" style="margin-left:auto;font-size:11px;background:#f6ffed;color:var(--success)">manual</span></div>
+                    <div class="case-select-item"><input type="checkbox"> TC-0251 Token 过期自动刷新 <span class="task-trigger trigger-auto" style="margin-left:auto;font-size:11px">auto</span></div>
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px">已选择 3 条用例</div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">执行环境</label>
+                    <select class="form-select"><option>测试环境 (test)</option><option>预发环境 (staging)</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">浏览器</label>
+                    <select class="form-select"><option>Chrome 120</option><option>Firefox 121</option><option>Safari 17</option><option>Edge 120</option></select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">并发数</label>
+                    <select class="form-select"><option>1 (串行)</option><option selected>2</option><option>4</option><option>8</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">失败重试次数</label>
+                    <select class="form-select"><option>0 (不重试)</option><option selected>1</option><option>2</option><option>3</option></select>
+                </div>
+            </div>
+
+            <!-- 定时任务切换 + CRON 输入 -->
+            <div class="switch-box" style="margin-top:4px">
+                <label class="switch"><input type="checkbox" id="createAsScheduleToggle" onchange="document.getElementById('createCronSection').classList.toggle('show',this.checked)"><span class="slider"></span></label>
+                <label for="createAsScheduleToggle" style="cursor:pointer;margin:0">保存为定时任务（按 CRON 周期执行）</label>
+            </div>
+            <div class="cron-section" id="createCronSection">
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label">CRON 表达式</label>
+                    <input class="form-input" placeholder="0 0 2 * * ?" value="0 0 2 * * ?" style="font-family:'SF Mono',Consolas,monospace">
+                </div>
+                <div class="cron-presets">
+                    <span class="cron-preset" onclick="this.closest('.cron-section').querySelector('input').value='0 0 2 * * ?'">每日凌晨 2 点</span>
+                    <span class="cron-preset" onclick="this.closest('.cron-section').querySelector('input').value='0 30 1 ? * SUN'">每周日 1:30</span>
+                    <span class="cron-preset" onclick="this.closest('.cron-section').querySelector('input').value='0 */30 * * * ?'">每 30 分钟</span>
+                    <span class="cron-preset" onclick="this.closest('.cron-section').querySelector('input').value='0 15 * * * ?'">每小时 15 分</span>
+                    <span class="cron-preset" onclick="this.closest('.cron-section').querySelector('input').value='0 0 6 1 * ?'">每月 1 号 6 点</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').classList.remove('show')">取消</button>
+            <button class="btn" onclick="this.closest('.modal-overlay').classList.remove('show')">💾 保存为待执行</button>
+            <button class="btn btn-primary" onclick="this.closest('.modal-overlay').classList.remove('show')">▶ 保存并立即执行</button>
+        </div>
+    </div>
+</div>
+
+<!-- 导入外部用例对话框 -->
+<div class="modal-overlay" id="importModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>📥 导入外部用例</h3>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('show')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">导入格式</label>
+                <select class="form-select"><option>JSON 格式</option><option>Excel (.xlsx)</option><option>CSV</option></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">选择文件</label>
+                <div style="border:2px dashed var(--border);border-radius:8px;padding:40px;text-align:center;color:var(--text-muted);cursor:pointer">
+                    <div style="font-size:32px;margin-bottom:8px">📂</div>
+                    <div>点击或拖拽文件到此处上传</div>
+                    <div style="font-size:12px;margin-top:4px">支持 .json / .xlsx / .csv</div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').classList.remove('show')">取消</button>
+            <button class="btn btn-primary" onclick="this.closest('.modal-overlay').classList.remove('show')">📥 导入</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 步骤结果对话框 ====== -->
+<div class="modal-overlay" id="stepResultModal">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h3>📋 执行步骤结果 — #1024 · fix/order-stock 变更回归</h3>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('show')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="stats-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+                <div class="stat-card" style="padding:12px 16px;box-shadow:none;border:1px solid var(--border)">
+                    <div class="stat-label">总步骤数</div>
+                    <div class="stat-value" style="font-size:20px">142</div>
+                </div>
+                <div class="stat-card" style="padding:12px 16px;box-shadow:none;border:1px solid var(--border)">
+                    <div class="stat-label">通过</div>
+                    <div class="stat-value" style="font-size:20px;color:var(--success)">138</div>
+                </div>
+                <div class="stat-card" style="padding:12px 16px;box-shadow:none;border:1px solid var(--border)">
+                    <div class="stat-label">失败</div>
+                    <div class="stat-value" style="font-size:20px;color:var(--error)">4</div>
+                </div>
+                <div class="stat-card" style="padding:12px 16px;box-shadow:none;border:1px solid var(--border)">
+                    <div class="stat-label">总耗时</div>
+                    <div class="stat-value" style="font-size:20px">5m 12s</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:12px">
+                <select class="form-select" style="width:260px">
+                    <option>全部用例 (30)</option>
+                    <option>TC-0003 订单创建-库存扣减并发验证</option>
+                    <option style="color:var(--error)">TC-0015 订单超时自动取消 (2 失败步骤)</option>
+                    <option style="color:var(--error)">TC-0021 支付回调库存释放 (2 失败步骤)</option>
+                </select>
+            </div>
+
+            <div class="card" style="box-shadow:none;border:1px solid var(--border)">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width:60px">步骤</th>
+                            <th>动作描述</th>
+                            <th>断言类型</th>
+                            <th style="width:80px">结果</th>
+                            <th>实际值</th>
+                            <th style="width:80px">耗时</th>
+                            <th>定位策略</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono-id">#1</td>
+                            <td>导航到 /login 页面</td>
+                            <td>—</td>
+                            <td><span class="step-result-pass">PASS</span></td>
+                            <td style="color:var(--text-muted)">页面已加载</td>
+                            <td>1.2s</td>
+                            <td><span class="locator-strategy">primary</span></td>
+                        </tr>
+                        <tr>
+                            <td class="mono-id">#2</td>
+                            <td>输入用户名 test_user_001</td>
+                            <td>—</td>
+                            <td><span class="step-result-pass">PASS</span></td>
+                            <td style="color:var(--text-muted)">—</td>
+                            <td>0.3s</td>
+                            <td><span class="locator-strategy">primary</span></td>
+                        </tr>
+                        <tr>
+                            <td class="mono-id">#3</td>
+                            <td>输入密码并点击登录按钮</td>
+                            <td>元素可见</td>
+                            <td><span class="step-result-pass">PASS</span></td>
+                            <td>用户头像元素可见</td>
+                            <td>2.1s</td>
+                            <td><span class="locator-strategy backup">backup</span></td>
+                        </tr>
+                        <tr>
+                            <td class="mono-id">#4</td>
+                            <td>导航到 /goods/sku-8812</td>
+                            <td>—</td>
+                            <td><span class="step-result-pass">PASS</span></td>
+                            <td style="color:var(--text-muted)">—</td>
+                            <td>0.8s</td>
+                            <td><span class="locator-strategy">primary</span></td>
+                        </tr>
+                        <tr>
+                            <td class="mono-id">#5</td>
+                            <td>点击「加入购物车」按钮 (add-cart-btn)</td>
+                            <td>toast 文本</td>
+                            <td><span class="step-result-pass">PASS</span></td>
+                            <td>已加入购物车</td>
+                            <td>1.5s</td>
+                            <td><span class="locator-strategy">primary</span></td>
+                        </tr>
+                        <tr style="background:#fff7f7">
+                            <td class="mono-id">#6</td>
+                            <td>点击「去结算」进入订单确认页</td>
+                            <td>URL 包含 /order/confirm</td>
+                            <td><span class="step-result-fail">FAIL</span></td>
+                            <td style="color:var(--error)">实际 URL: /goods/detail?error=stock_not_enough</td>
+                            <td>3.2s</td>
+                            <td><span class="locator-strategy backup">backup</span></td>
+                        </tr>
+                        <tr style="background:#fff7f7">
+                            <td class="mono-id">#7</td>
+                            <td>确认订单并提交 (submit-order-btn)</td>
+                            <td>订单号生成</td>
+                            <td><span class="step-result-fail">FAIL</span></td>
+                            <td style="color:var(--error)">按钮不可点击 (disabled) · 未触发创建</td>
+                            <td>0.6s</td>
+                            <td><span class="locator-strategy">primary</span></td>
+                        </tr>
+                        <tr>
+                            <td class="mono-id">#8</td>
+                            <td>返回首页，检查库存显示</td>
+                            <td>文本相等 (剩余 999)</td>
+                            <td><span class="step-result-pass">PASS</span></td>
+                            <td>剩余 999 件</td>
+                            <td>0.9s</td>
+                            <td><span class="locator-strategy">primary</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <button disabled>«</button>
+                <button class="active">1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>»</button>
+                <span>共 142 条步骤，当前展示 TC-0003 用例 1-8</span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').classList.remove('show')">关闭</button>
+            <button class="btn" style="color:var(--error)">⬇️ 导出失败用例报告</button>
+            <button class="btn btn-primary">🔄 重新执行失败步骤</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 新增节点对话框 ====== -->
+<div class="modal-overlay" id="nodeModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>➕ 新增执行节点</h3>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('show')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">节点名称<span class="required">*</span></label>
+                <input class="form-input" placeholder="例如：Node-07 · 备用Web节点">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">主机地址<span class="required">*</span></label>
+                    <input class="form-input" placeholder="10.0.1.27 或域名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">端口<span class="required">*</span></label>
+                    <input class="form-input" placeholder="4444" value="4444">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">支持的浏览器类型（多选）</label>
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <label style="font-size:13px"><input type="checkbox" checked style="accent-color:var(--primary);margin-right:4px"> Chrome 120+</label>
+                    <label style="font-size:13px"><input type="checkbox" checked style="accent-color:var(--primary);margin-right:4px"> Firefox 121+</label>
+                    <label style="font-size:13px"><input type="checkbox" style="accent-color:var(--primary);margin-right:4px"> Safari 17+</label>
+                    <label style="font-size:13px"><input type="checkbox" style="accent-color:var(--primary);margin-right:4px"> Edge 120+</label>
+                    <label style="font-size:13px"><input type="checkbox" style="accent-color:var(--primary);margin-right:4px"> API Only</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">最大并发数<span class="required">*</span></label>
+                    <input class="form-input" type="number" value="8">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">心跳间隔 (秒)</label>
+                    <input class="form-input" type="number" value="30">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">节点描述</label>
+                <textarea class="form-textarea" placeholder="节点用途、配置、归属集群等说明"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').classList.remove('show')">取消</button>
+            <button class="btn">💓 连通性测试</button>
+            <button class="btn btn-primary" onclick="this.closest('.modal-overlay').classList.remove('show')">💾 保存节点</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 新增定时任务对话框 ====== -->
+<div class="modal-overlay" id="scheduleModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>➕ 新增定时任务</h3>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('show')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">任务名称<span class="required">*</span></label>
+                <input class="form-input" placeholder="例如：每日冒烟 / 每周全量回归">
+            </div>
+            <div class="form-group">
+                <label class="form-label">绑定用例集<span class="required">*</span></label>
+                <select class="form-select">
+                    <option>P0 核心用例集 (28 条)</option>
+                    <option>订单中心全量 (62 条)</option>
+                    <option>支付模块专项 (35 条)</option>
+                    <option>用户中心全量 (41 条)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">CRON 表达式<span class="required">*</span></label>
+                <input class="form-input" style="font-family:'SF Mono',Consolas,monospace" placeholder="0 0 2 * * ?" value="0 0 2 * * ?">
+                <div class="cron-presets">
+                    <span class="cron-preset" onclick="this.closest('.form-group').querySelector('input').value='0 0 2 * * ?'">每日凌晨 2 点</span>
+                    <span class="cron-preset" onclick="this.closest('.form-group').querySelector('input').value='0 30 1 ? * SUN'">每周日 1:30</span>
+                    <span class="cron-preset" onclick="this.closest('.form-group').querySelector('input').value='0 */30 * * * ?'">每 30 分钟</span>
+                    <span class="cron-preset" onclick="this.closest('.form-group').querySelector('input').value='0 15 * * * ?'">每小时 15 分</span>
+                    <span class="cron-preset" onclick="this.closest('.form-group').querySelector('input').value='0 0 6 1 * ?'">每月 1 号 6 点</span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">执行环境</label>
+                    <select class="form-select"><option>测试环境 (test)</option><option>预发环境 (staging)</option><option>生产巡检</option><option>性能环境</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">并发数</label>
+                    <select class="form-select"><option>1 (串行)</option><option selected>2</option><option>4</option><option>8</option></select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">失败告警</label>
+                    <select class="form-select"><option>邮件 + 企业微信</option><option>仅邮件</option><option>仅企业微信</option><option>不告警</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">触发人 / 归属</label>
+                    <input class="form-input" value="Admin" readonly>
+                </div>
+            </div>
+            <div class="switch-box">
+                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                <span>保存后立即启用（开始等待下一次触发时间）</span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').classList.remove('show')">取消</button>
+            <button class="btn btn-primary" onclick="this.closest('.modal-overlay').classList.remove('show')">💾 保存定时任务</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ====== 页内 Tab 切换 ======
+    document.querySelectorAll('.page-tabs').forEach(function (tabsEl) {
+        tabsEl.querySelectorAll('.page-tab').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var target = tab.getAttribute('data-target');
+                // 切换 tab 高亮
+                tabsEl.querySelectorAll('.page-tab').forEach(function (t) { t.classList.remove('active'); });
+                tab.classList.add('active');
+                // 切换面板
+                var panelsContainer = tab.closest('.content') || document.body;
+                panelsContainer.querySelectorAll(':scope > .tab-panel').forEach(function (p) { p.classList.remove('active'); });
+                var panel = document.getElementById(target);
+                if (panel) panel.classList.add('active');
+            });
+        });
+    });
+
+    // 子 Tab (筛选 tab) 切换
+    document.querySelectorAll('.tab-group').forEach(function (group) {
+        group.querySelectorAll('.tab-item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                group.querySelectorAll('.tab-item').forEach(function (i) { i.classList.remove('active'); });
+                item.classList.add('active');
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -72,9 +72,10 @@ public class CodeAnalysisException extends BusinessException {
         super(errorCode, message, cause);
     }
 
-    /* ==================== 工厂方法 - 常用异常场景 ====================
-     * ==================== Factory Methods - Common Exception Scenarios ====================
-     */
+    /* ============================================================
+     *  工厂方法 - 常用异常场景
+     *  Factory Methods - Common Exception Scenarios
+     * ============================================================ */
 
     /**
      * 变更分析不存在异常
